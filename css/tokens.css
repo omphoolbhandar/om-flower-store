@@ -1,0 +1,196 @@
+/* ============================================================
+   Om Flower Store — Shared design tokens
+   Loaded by BOTH the admin panel and the customer storefront so
+   the two look like one product. Palette is drawn from the
+   shop's own materials: deep leaf green, marigold, jasmine
+   white and rose-pink — not a generic template palette.
+   ============================================================ */
+:root {
+  --green-deep: #1f3a2e;
+  --green-soft: #335445;
+  --marigold: #e8a33d;
+  --marigold-deep: #c97f1f;
+  --jasmine: #fffbf2;
+  --rose: #e15b7c;
+  --ink: #1c2620;
+  --muted: #6b7568;
+  --line: #ddd2ba;
+  --card: #ffffff;
+  --danger: #c14545;
+
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Outfit", -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --radius: 14px;
+  --shadow: 0 6px 24px rgba(31, 58, 46, 0.10);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--jasmine);
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+a { color: inherit; text-decoration: none; }
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+  border: none;
+}
+
+input, select, textarea {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+}
+
+.hidden { display: none !important; }
+.muted { color: var(--muted); }
+
+/* ---------- Buttons ---------- */
+.btn-primary {
+  background: var(--marigold);
+  color: var(--green-deep);
+  font-weight: 600;
+  padding: 0.7rem 1.3rem;
+  border-radius: 999px;
+  transition: transform 0.12s ease, background 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+.btn-primary:hover { background: var(--marigold-deep); }
+.btn-primary:active { transform: scale(0.97); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--jasmine);
+  border: 1px solid rgba(255,255,255,0.35);
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  font-weight: 500;
+}
+.btn-ghost:hover { background: rgba(255,255,255,0.10); }
+
+.btn-icon {
+  background: transparent;
+  font-size: 1.1rem;
+  color: var(--muted);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+}
+.btn-icon:hover { background: rgba(0,0,0,0.05); }
+
+/* ---------- Flower bloom icon (signature element) ---------- */
+.bloom {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+.bloom svg { display: block; }
+
+/* ---------- Chips (occasion tags, filters) ---------- */
+.chip-group { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.chip {
+  background: var(--jasmine);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+.chip.selected {
+  background: var(--marigold);
+  color: var(--green-deep);
+  border-color: var(--marigold-deep);
+  font-weight: 700;
+}
+
+/* ---------- Stock badge ---------- */
+.stock-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-bottom: 0.7rem;
+}
+.stock-badge.in { color: var(--marigold-deep); }
+.stock-badge.out { color: #a09a86; }
+
+/* ---------- Shared product card (used by admin grid + shop grid) ---------- */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+.product-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.product-card .thumb {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: var(--jasmine);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--line);
+}
+.product-card .thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.product-card .body { padding: 0.9rem 1rem 1rem; flex: 1; display: flex; flex-direction: column; }
+.product-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  margin: 0 0 0.15rem;
+  color: var(--green-deep);
+}
+.product-card .meta {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+.product-card .price {
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ---------- Shared form field (login page, contact form) ---------- */
+.field {
+  display: block;
+  margin-bottom: 1.1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--green-deep);
+}
+.field input, .field textarea, .field select {
+  display: block;
+  width: 100%;
+  margin-top: 0.4rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--jasmine);
+  color: var(--ink);
+}
+.field input:focus, .field textarea:focus, .field select:focus {
+  outline: 2px solid var(--marigold);
+  outline-offset: 1px;
+}

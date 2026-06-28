@@ -1,0 +1,353 @@
+/* ============================================================
+   Om Flower Store — Customer storefront styles
+   Shared tokens, buttons, chips, product card are in
+   css/tokens.css (loaded before this file).
+   ============================================================ */
+
+/* ---------- Header / nav ---------- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--card);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 1.4rem;
+}
+.site-header .brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--marigold-deep);
+}
+.site-header .brand span.name {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--green-deep);
+}
+.site-nav {
+  display: flex;
+  gap: 1.4rem;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--green-deep);
+}
+.site-nav a:hover { color: var(--marigold-deep); }
+
+.cart-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  color: var(--green-deep);
+}
+.cart-badge {
+  position: absolute;
+  top: -7px;
+  right: -9px;
+  background: var(--rose);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  min-width: 17px;
+  height: 17px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  background: radial-gradient(circle at 80% 15%, var(--green-soft), var(--green-deep) 65%);
+  color: var(--jasmine);
+  padding: 3.6rem 1.5rem;
+  text-align: center;
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  margin: 0 0 0.6rem;
+}
+.hero p {
+  font-size: 1.02rem;
+  color: rgba(255,255,255,0.85);
+  max-width: 480px;
+  margin: 0 auto 1.6rem;
+}
+.hero .btn-primary { font-size: 0.95rem; }
+
+/* ---------- Generic page sections ---------- */
+.section {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 2.4rem 1.4rem;
+}
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+  gap: 1rem;
+}
+.section-head h2 {
+  font-family: var(--font-display);
+  color: var(--green-deep);
+  font-size: 1.4rem;
+  margin: 0;
+}
+.section-head a {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--marigold-deep);
+  white-space: nowrap;
+}
+
+/* ---------- Horizontal pill rail (categories / occasions) ---------- */
+.pill-rail {
+  display: flex;
+  gap: 0.7rem;
+  overflow-x: auto;
+  padding-bottom: 0.3rem;
+}
+.pill-card {
+  flex-shrink: 0;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--green-deep);
+  white-space: nowrap;
+}
+.pill-card:hover { background: var(--jasmine); border-color: var(--marigold); }
+
+/* ---------- Shop grid + filters ---------- */
+.shop-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-bottom: 1.2rem;
+}
+.shop-toolbar input[type="search"] {
+  flex: 1;
+  min-width: 180px;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--card);
+}
+.shop-toolbar input:focus { outline: 2px solid var(--marigold); outline-offset: 1px; }
+
+.filter-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.4rem; }
+.filter-row .chip { cursor: pointer; }
+
+.product-card .add-to-cart-btn {
+  width: 100%;
+  margin-top: auto;
+  justify-content: center;
+}
+.product-card a { display: block; }
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--muted);
+}
+.empty-state p:first-child {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--green-deep);
+}
+
+/* ---------- Product detail page ---------- */
+.product-detail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.2rem;
+  align-items: start;
+}
+@media (max-width: 760px) {
+  .product-detail { grid-template-columns: 1fr; }
+}
+.gallery-main {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--line);
+}
+.gallery-main img { width: 100%; height: 100%; object-fit: cover; }
+.gallery-thumbs { display: flex; gap: 0.6rem; margin-top: 0.7rem; }
+.gallery-thumbs img {
+  width: 60px; height: 60px; object-fit: cover;
+  border-radius: 8px; border: 2px solid transparent; cursor: pointer;
+}
+.gallery-thumbs img.active { border-color: var(--marigold); }
+
+.detail-info h1 {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  color: var(--green-deep);
+  margin: 0 0 0.3rem;
+}
+.detail-info .price { font-size: 1.4rem; font-weight: 700; margin: 0.4rem 0; }
+.detail-info .meta { color: var(--muted); margin-bottom: 0.8rem; }
+.detail-info .description { line-height: 1.6; margin-bottom: 1.2rem; }
+
+.qty-stepper {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-right: 0.8rem;
+}
+.qty-stepper button {
+  background: var(--jasmine);
+  width: 36px; height: 36px;
+  font-size: 1.1rem;
+  color: var(--green-deep);
+}
+.qty-stepper span {
+  width: 36px;
+  text-align: center;
+  font-weight: 600;
+}
+.detail-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 0.6rem; margin-top: 1rem; }
+.back-link { display: inline-block; margin-bottom: 1.2rem; font-weight: 600; color: var(--green-deep); }
+
+/* ---------- Cart page ---------- */
+.cart-list { display: flex; flex-direction: column; gap: 0.9rem; margin-bottom: 1.6rem; }
+.cart-row {
+  display: grid;
+  grid-template-columns: 64px 1fr auto auto;
+  align-items: center;
+  gap: 0.9rem;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 0.7rem 0.9rem;
+}
+.cart-row img { width: 64px; height: 64px; object-fit: cover; border-radius: 8px; }
+.cart-row .name { font-weight: 600; color: var(--green-deep); }
+.cart-row .unit-price { font-size: 0.82rem; color: var(--muted); }
+.cart-row .line-total { font-weight: 700; min-width: 70px; text-align: right; }
+.cart-row .remove-btn { color: var(--danger); font-size: 0.8rem; font-weight: 600; background: none; }
+
+.cart-summary {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.2rem;
+  max-width: 360px;
+  margin-left: auto;
+}
+.cart-summary .row { display: flex; justify-content: space-between; margin-bottom: 0.6rem; }
+.cart-summary .total { font-weight: 700; font-size: 1.15rem; }
+.cart-summary .btn-primary { width: 100%; margin-top: 0.6rem; }
+
+/* ---------- Checkout ---------- */
+.checkout-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+@media (max-width: 760px) {
+  .checkout-grid { grid-template-columns: 1fr; }
+}
+.checkout-form label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--green-deep);
+  margin-bottom: 1rem;
+}
+.checkout-form input, .checkout-form textarea {
+  display: block;
+  width: 100%;
+  margin-top: 0.4rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--jasmine);
+  color: var(--ink);
+}
+.checkout-form input:focus, .checkout-form textarea:focus {
+  outline: 2px solid var(--marigold); outline-offset: 1px;
+}
+.order-summary {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.2rem;
+}
+.order-summary .item-row { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 0.5rem; }
+.order-summary hr { border: none; border-top: 1px solid var(--line); margin: 0.8rem 0; }
+
+.success-panel {
+  text-align: center;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2.4rem 1.6rem;
+  max-width: 440px;
+  margin: 2rem auto;
+}
+.success-panel h2 { font-family: var(--font-display); color: var(--green-deep); }
+.success-panel .btn-primary { margin-top: 1rem; }
+
+/* ---------- Contact page ---------- */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+@media (max-width: 760px) {
+  .contact-grid { grid-template-columns: 1fr; }
+}
+.contact-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.4rem;
+}
+
+/* ---------- Footer ---------- */
+.site-footer {
+  background: var(--green-deep);
+  color: rgba(255,255,255,0.85);
+  text-align: center;
+  padding: 2.2rem 1.4rem;
+  margin-top: 2rem;
+}
+.site-footer .brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--marigold);
+  margin-bottom: 0.4rem;
+}
+.site-footer .brand-row strong {
+  font-family: var(--font-display);
+  color: var(--jasmine);
+  font-size: 1.1rem;
+}
+.site-footer p { margin: 0.3rem 0; font-size: 0.88rem; }
+.site-footer .btn-primary { margin: 0.9rem 0; font-size: 0.88rem; }
+.site-footer .copyright { font-size: 0.75rem; color: rgba(255,255,255,0.5); margin-top: 0.8rem; }
+
+.form-error { color: var(--danger); font-size: 0.85rem; margin-top: 0.6rem; }
+.form-success { color: var(--marigold-deep); font-size: 0.85rem; margin-top: 0.6rem; font-weight: 600; }

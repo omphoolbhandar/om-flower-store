@@ -7,9 +7,9 @@
    server-side. See /cloudflare-worker/ and SETUP_GUIDE.md.
 
    Replace this with YOUR deployed Worker's URL, e.g.
-   "https://om-flower-store-github-proxy.<your-subdomain>.workers.dev"
+   "om-flower-proxy.ctetone31.workers.dev"
    ============================================================ */
 
-const GITHUB_PROXY_URL = "https://YOUR-WORKER-SUBDOMAIN.workers.dev";
+const GITHUB_PROXY_URL = "https://om-flower-proxy.ctetone31.workers.dev";
 
 window.GITHUB_PROXY_CONFIGURED = !GITHUB_PROXY_URL.includes('YOUR-WORKER-SUBDOMAIN');

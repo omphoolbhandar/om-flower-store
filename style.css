@@ -1,0 +1,547 @@
+/* ============================================================
+   Om Flower Store — Admin design tokens
+   Palette is drawn from the shop's own materials: deep leaf
+   green, marigold, jasmine white and rose-pink — not a generic
+   admin-dashboard grey.
+   ============================================================ */
+:root {
+  --green-deep: #1f3a2e;
+  --green-soft: #335445;
+  --marigold: #e8a33d;
+  --marigold-deep: #c97f1f;
+  --jasmine: #fffbf2;
+  --rose: #e15b7c;
+  --ink: #1c2620;
+  --muted: #6b7568;
+  --line: #ddd2ba;
+  --card: #ffffff;
+  --danger: #c14545;
+
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Outfit", -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --radius: 14px;
+  --shadow: 0 6px 24px rgba(31, 58, 46, 0.10);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--jasmine);
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+a { color: inherit; }
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+  border: none;
+}
+
+input, select, textarea {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+}
+
+.hidden { display: none !important; }
+.muted { color: var(--muted); }
+
+/* ---------- Buttons ---------- */
+.btn-primary {
+  background: var(--marigold);
+  color: var(--green-deep);
+  font-weight: 600;
+  padding: 0.7rem 1.3rem;
+  border-radius: 999px;
+  transition: transform 0.12s ease, background 0.15s ease;
+}
+.btn-primary:hover { background: var(--marigold-deep); }
+.btn-primary:active { transform: scale(0.97); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--jasmine);
+  border: 1px solid rgba(255,255,255,0.35);
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  font-weight: 500;
+}
+.btn-ghost:hover { background: rgba(255,255,255,0.10); }
+
+.btn-icon {
+  background: transparent;
+  font-size: 1.1rem;
+  color: var(--muted);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+}
+.btn-icon:hover { background: rgba(0,0,0,0.05); }
+
+/* ---------- Flower bloom icon (signature element) ---------- */
+.bloom {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+.bloom svg { display: block; }
+
+/* ---------- Login page ---------- */
+.login-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 20% 20%, var(--green-soft), var(--green-deep) 60%);
+  padding: 1.5rem;
+}
+.login-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2.4rem 2.2rem;
+  width: 100%;
+  max-width: 380px;
+}
+.login-card .brand-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.3rem;
+  color: var(--marigold-deep);
+}
+.login-card h1 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  margin: 0;
+  color: var(--green-deep);
+}
+.login-card p.tagline {
+  margin: 0.2rem 0 1.8rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+.field {
+  display: block;
+  margin-bottom: 1.1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--green-deep);
+}
+.field input, .field textarea, .field select {
+  display: block;
+  width: 100%;
+  margin-top: 0.4rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--jasmine);
+  color: var(--ink);
+}
+.field input:focus, .field textarea:focus, .field select:focus {
+  outline: 2px solid var(--marigold);
+  outline-offset: 1px;
+}
+.login-card button[type="submit"] {
+  width: 100%;
+  margin-top: 0.4rem;
+}
+.setup-banner {
+  background: #fff4e0;
+  border: 1px solid var(--marigold);
+  color: #6b4a10;
+  font-size: 0.82rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 9px;
+  margin-bottom: 1.2rem;
+  line-height: 1.4;
+}
+.form-error {
+  color: var(--danger);
+  font-size: 0.85rem;
+  margin-top: 0.8rem;
+}
+
+/* ---------- Admin shell ---------- */
+.auth-check {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-family: var(--font-body);
+}
+.topbar {
+  background: var(--green-deep);
+  color: var(--jasmine);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.4rem;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+.brand span {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+.brand small {
+  background: var(--marigold);
+  color: var(--green-deep);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  margin-left: 0.3rem;
+}
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.8);
+}
+
+.tabs {
+  display: flex;
+  gap: 0.3rem;
+  padding: 0.7rem 1.4rem 0;
+  border-bottom: 1px solid var(--line);
+  background: var(--jasmine);
+  overflow-x: auto;
+}
+.tab-btn {
+  background: transparent;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--muted);
+  padding: 0.6rem 0.9rem;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+}
+.tab-btn.active {
+  color: var(--green-deep);
+  border-bottom-color: var(--marigold);
+}
+.tab-btn:disabled {
+  color: #b9b09c;
+  cursor: not-allowed;
+}
+.tab-btn .soon {
+  font-size: 0.6rem;
+  background: var(--line);
+  color: var(--muted);
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  margin-left: 0.3rem;
+  text-transform: uppercase;
+}
+
+main { padding: 1.4rem; max-width: 1180px; margin: 0 auto; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+.panel-toolbar {
+  display: flex;
+  gap: 0.7rem;
+  margin-bottom: 1.2rem;
+  flex-wrap: wrap;
+}
+.panel-toolbar input[type="search"],
+.panel-toolbar input[type="text"] {
+  flex: 1;
+  min-width: 180px;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--card);
+}
+.panel-toolbar input:focus { outline: 2px solid var(--marigold); outline-offset: 1px; }
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--muted);
+}
+.empty-state p:first-child {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--green-deep);
+}
+
+/* ---------- Product grid ---------- */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+.product-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.product-card .thumb {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: var(--jasmine) url('data:image/svg+xml;utf8,') center/cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--line);
+}
+.product-card .thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.product-card .body { padding: 0.9rem 1rem 1rem; flex: 1; display: flex; flex-direction: column; }
+.product-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  margin: 0 0 0.15rem;
+  color: var(--green-deep);
+}
+.product-card .meta {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+.product-card .price {
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+}
+.stock-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-bottom: 0.7rem;
+}
+.stock-badge.in { color: var(--marigold-deep); }
+.stock-badge.out { color: #a09a86; }
+
+.card-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+.card-actions button {
+  flex: 1;
+  padding: 0.45rem 0.5rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: var(--jasmine);
+  border: 1px solid var(--line);
+  color: var(--green-deep);
+}
+.card-actions button:hover { background: #f2ead8; }
+.card-actions button.danger { color: var(--danger); }
+
+.confirm-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  margin-top: auto;
+  background: #fdeceb;
+  border-radius: 8px;
+  padding: 0.4rem 0.5rem;
+}
+.confirm-row button {
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.confirm-row .yes { background: var(--danger); color: white; }
+.confirm-row .no { background: var(--line); color: var(--ink); }
+
+/* ---------- Categories tab ---------- */
+.category-list { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.category-list li {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.45rem 0.5rem 0.45rem 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+}
+.category-list li button {
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.9rem;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+}
+.category-list li button:hover { background: #fdeceb; color: var(--danger); }
+
+/* ---------- Drawer (Add / Edit product) ---------- */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(28, 38, 32, 0.45);
+  z-index: 40;
+}
+.drawer {
+  position: fixed;
+  top: 0;
+  right: -420px;
+  width: min(420px, 100vw);
+  height: 100vh;
+  background: var(--card);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  transition: right 0.28s ease;
+  box-shadow: -8px 0 30px rgba(0,0,0,0.15);
+}
+.drawer.open { right: 0; }
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.3rem;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.drawer-header h2 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  margin: 0;
+  color: var(--green-deep);
+}
+
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.1rem 1.3rem;
+}
+.drawer-body label {
+  display: block;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--green-deep);
+  margin-bottom: 1rem;
+}
+.drawer-body input[type="text"],
+.drawer-body input[type="number"],
+.drawer-body input[type="file"],
+.drawer-body select,
+.drawer-body textarea {
+  display: block;
+  width: 100%;
+  margin-top: 0.4rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--jasmine);
+  font-weight: 400;
+  color: var(--ink);
+}
+.drawer-body textarea { resize: vertical; }
+.drawer-body fieldset {
+  border: none;
+  padding: 0;
+  margin: 0 0 1rem;
+}
+.drawer-body legend {
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--green-deep);
+  margin-bottom: 0.5rem;
+  padding: 0;
+}
+.switch-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+.switch-row input { width: auto; margin: 0; }
+
+.chip-group { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.chip {
+  background: var(--jasmine);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+.chip.selected {
+  background: var(--marigold);
+  color: var(--green-deep);
+  border-color: var(--marigold-deep);
+  font-weight: 700;
+}
+
+.image-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0.6rem 0 1rem;
+}
+.image-preview .thumb-wrap {
+  position: relative;
+  width: 70px;
+  height: 70px;
+  border-radius: 9px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+.image-preview .thumb-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.image-preview .thumb-wrap button {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: rgba(28,38,32,0.75);
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+.drawer-footer {
+  flex-shrink: 0;
+  display: flex;
+  gap: 0.7rem;
+  justify-content: flex-end;
+  padding: 1rem 1.3rem;
+  border-top: 1px solid var(--line);
+  background: var(--card);
+}
+.drawer-footer .btn-ghost {
+  color: var(--green-deep);
+  border-color: var(--line);
+}
+.drawer-footer .btn-ghost:hover { background: var(--jasmine); }
+
+@media (max-width: 480px) {
+  .drawer { width: 100vw; right: -100vw; }
+  main { padding: 1rem; }
+}

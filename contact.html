@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact · Om Flower Store</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" class="brand">
+    <span class="bloom">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+        <circle cx="12" cy="6" r="4.2"/><circle cx="17.3" cy="9.8" r="4.2"/>
+        <circle cx="15.4" cy="16" r="4.2"/><circle cx="8.6" cy="16" r="4.2"/>
+        <circle cx="6.7" cy="9.8" r="4.2"/><circle cx="12" cy="12" r="2.6" fill="#fffbf2"/>
+      </svg>
+    </span>
+    <span class="name">Om Flower Store</span>
+  </a>
+  <nav class="site-nav">
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+  <a href="cart.html" class="cart-link" aria-label="Cart">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+      <path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8a3 3 0 116 0"/>
+    </svg>
+    <span id="cartCount" class="cart-badge hidden">0</span>
+  </a>
+</header>
+
+<section class="section">
+  <div class="section-head"><h2>Contact us</h2></div>
+
+  <div class="contact-grid">
+    <div class="contact-card">
+      <h3 style="font-family:var(--font-display); color:var(--green-deep); margin-top:0;">Send an enquiry</h3>
+      <form id="contactForm">
+        <label class="field">Name
+          <input type="text" id="cName" required>
+        </label>
+        <label class="field">Phone number
+          <input type="tel" id="cPhone" required>
+        </label>
+        <label class="field">Message
+          <textarea id="cMessage" rows="4" required></textarea>
+        </label>
+        <button type="submit" id="sendBtn" class="btn-primary">Send</button>
+        <p id="formError" class="form-error hidden"></p>
+        <p id="formSuccess" class="form-success hidden">Bhej diya! Hum jaldi reply karenge.</p>
+      </form>
+    </div>
+
+    <div class="contact-card">
+      <h3 style="font-family:var(--font-display); color:var(--green-deep); margin-top:0;">Quick chat</h3>
+      <p class="muted">Order ya availability ke baare mein turant poochna hai? Direct WhatsApp pe message karo.</p>
+      <a id="whatsappBtn" class="btn-primary" target="_blank" rel="noopener">Chat on WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="brand-row">
+    <span class="bloom">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+        <circle cx="12" cy="6" r="4.2"/><circle cx="17.3" cy="9.8" r="4.2"/>
+        <circle cx="15.4" cy="16" r="4.2"/><circle cx="8.6" cy="16" r="4.2"/>
+        <circle cx="6.7" cy="9.8" r="4.2"/><circle cx="12" cy="12" r="2.6" fill="#1f3a2e"/>
+      </svg>
+    </span>
+    <strong>Om Flower Store</strong>
+  </div>
+  <p class="copyright">© 2026 Om Flower Store</p>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/site-config.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/contact.js"></script>
+</body>
+</html>

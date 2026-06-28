@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout · Om Flower Store</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" class="brand">
+    <span class="bloom">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+        <circle cx="12" cy="6" r="4.2"/><circle cx="17.3" cy="9.8" r="4.2"/>
+        <circle cx="15.4" cy="16" r="4.2"/><circle cx="8.6" cy="16" r="4.2"/>
+        <circle cx="6.7" cy="9.8" r="4.2"/><circle cx="12" cy="12" r="2.6" fill="#fffbf2"/>
+      </svg>
+    </span>
+    <span class="name">Om Flower Store</span>
+  </a>
+  <nav class="site-nav">
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+  <a href="cart.html" class="cart-link" aria-label="Cart">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+      <path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8a3 3 0 116 0"/>
+    </svg>
+    <span id="cartCount" class="cart-badge hidden">0</span>
+  </a>
+</header>
+
+<section class="section">
+  <div class="section-head"><h2>Checkout</h2></div>
+
+  <div id="emptyState" class="empty-state hidden">
+    <p>Cart khaali hai</p>
+    <p class="muted"><a href="shop.html">Shop pe jao</a> aur kuch bouquets add karo</p>
+  </div>
+
+  <div id="checkoutGrid" class="checkout-grid">
+    <form id="checkoutForm" class="checkout-form">
+      <label>Full name
+        <input type="text" id="custName" required>
+      </label>
+      <label>Phone number
+        <input type="tel" id="custPhone" required placeholder="10-digit mobile number">
+      </label>
+      <label>Delivery address
+        <textarea id="custAddress" rows="3" required></textarea>
+      </label>
+      <label>Notes (optional)
+        <textarea id="custNotes" rows="2" placeholder="e.g. delivery time, gift message"></textarea>
+      </label>
+      <button type="submit" id="placeOrderBtn" class="btn-primary">Place order</button>
+      <p class="muted" style="font-size:0.82rem; margin-top:0.6rem;">
+        Payment: Cash on delivery. Order confirm karne ke liye WhatsApp khulega.
+      </p>
+      <p id="formError" class="form-error hidden"></p>
+    </form>
+
+    <div class="order-summary">
+      <h3 style="font-family:var(--font-display); color:var(--green-deep); margin-top:0;">Order summary</h3>
+      <div id="summaryItems"></div>
+      <hr>
+      <div class="item-row" style="font-weight:700; font-size:1rem;">
+        <span>Total</span><span id="summaryTotal">₹0</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="successPanel" class="success-panel hidden">
+    <h2>Order placed! 🌸</h2>
+    <p>Order ID: <strong id="orderIdText"></strong></p>
+    <p class="muted">Apna order confirm karne ke liye WhatsApp pe message bhejo.</p>
+    <a id="whatsappConfirmBtn" class="btn-primary" target="_blank" rel="noopener">Confirm on WhatsApp</a>
+    <p style="margin-top:1rem;"><a href="shop.html">Continue shopping</a></p>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="brand-row">
+    <span class="bloom">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+        <circle cx="12" cy="6" r="4.2"/><circle cx="17.3" cy="9.8" r="4.2"/>
+        <circle cx="15.4" cy="16" r="4.2"/><circle cx="8.6" cy="16" r="4.2"/>
+        <circle cx="6.7" cy="9.8" r="4.2"/><circle cx="12" cy="12" r="2.6" fill="#1f3a2e"/>
+      </svg>
+    </span>
+    <strong>Om Flower Store</strong>
+  </div>
+  <p class="copyright">© 2026 Om Flower Store</p>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/site-config.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/checkout.js"></script>
+</body>
+</html>

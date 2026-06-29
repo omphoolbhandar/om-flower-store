@@ -13,12 +13,12 @@
   --ivory:#F5EDD6;--rose:#C45C8A;--deep:#0F0F1E;
   --glass:rgba(255,255,255,0.06);--green:#25D366;
 }
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth; overflow-y:scroll;}
 body{background:var(--navy);color:var(--ivory);font-family:'Inter',sans-serif;overflow-x:hidden}
 #petals{position:fixed;inset:0;pointer-events:none;z-index:0}
 
 /* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 5vw;backdrop-filter:blur(16px);background:rgba(15,15,30,0.85);border-bottom:1px solid rgba(232,196,216,0.12)}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 5%;backdrop-filter:blur(16px);background:rgba(15,15,30,0.85);border-bottom:1px solid rgba(232,196,216,0.12)}
 .nav-logo{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--blush);letter-spacing:.04em;text-decoration:none}
 .nav-logo span{font-family:'Dancing Script',cursive;color:var(--rose);font-size:1.7rem}
 .nav-links{display:flex;gap:2rem;list-style:none}
@@ -33,7 +33,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .mobile-menu a{display:block;color:var(--ivory);text-decoration:none;padding:.7rem 0;border-bottom:1px solid rgba(232,196,216,.08);font-size:.95rem}
 
 /* HERO */
-.hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:7rem 5vw 4rem;z-index:1}
+.hero{position:relative;height:60vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:7rem 5vw 2rem;z-index:1}
 .hero-eyebrow{font-family:'Dancing Script',cursive;font-size:1.4rem;color:var(--rose);margin-bottom:1rem;opacity:0;animation:fadeUp .8s .2s forwards}
 .hero-title{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,7vw,5.5rem);line-height:1.08;font-weight:700;color:var(--ivory);opacity:0;animation:fadeUp .9s .4s forwards}
 .hero-title em{color:var(--blush);font-style:italic}
@@ -165,6 +165,7 @@ footer{background:var(--deep);border-top:1px solid rgba(232,196,216,.08);padding
   .footer-inner{grid-template-columns:1fr 1fr}
 }
 @media(max-width:600px){
+  .hero { min-height: 400px; }
   .nav-links,.nav-cta{display:none}
   .hamburger{display:flex}
   .footer-inner{grid-template-columns:1fr}
@@ -202,40 +203,15 @@ footer{background:var(--deep);border-top:1px solid rgba(232,196,216,.08);padding
 </div>
 
 <!-- HERO -->
+
 <section class="hero" id="home">
   <div>
-    <p class="hero-eyebrow">Phoolon Ki Duniya Mein Aapka Swagat Hai 🌸</p>
-    <h1 class="hero-title">Har Khushi Ke Liye<br><em>Sundar Phool</em></h1>
-    <p class="hero-sub">Taazgi, rang, aur khushboo liye hum pohonchate hain aapke darwaze tak. Shaadi ho, birthday ho ya sirf pyaar — Om Flowers har pal ko khaas banata hai.</p>
-    <div class="hero-btns">
-      <a href="#products" class="btn-primary">Collection Dekhein</a>
-      <a href="#about" class="btn-outline">Hamare Baare Mein</a>
-    </div>
+    <h1 class="hero-title"></h1>
+    <p class="hero-sub"></p>
   </div>
-  <div class="hero-scroll">Scroll</div>
 </section>
 
 <!-- MARQUEE -->
-<div class="marquee-wrap" aria-hidden="true">
-  <div class="marquee">
-    <span class="marquee-item">Taaze Phool</span>
-    <span class="marquee-item">Bouquets</span>
-    <span class="marquee-item">Wedding Decoration</span>
-    <span class="marquee-item">Birthday Special</span>
-    <span class="marquee-item">Home Delivery</span>
-    <span class="marquee-item">Seasonal Flowers</span>
-    <span class="marquee-item">Pooja Samagri</span>
-    <span class="marquee-item">Corporate Gifts</span>
-    <span class="marquee-item">Taaze Phool</span>
-    <span class="marquee-item">Bouquets</span>
-    <span class="marquee-item">Wedding Decoration</span>
-    <span class="marquee-item">Birthday Special</span>
-    <span class="marquee-item">Home Delivery</span>
-    <span class="marquee-item">Seasonal Flowers</span>
-    <span class="marquee-item">Pooja Samagri</span>
-    <span class="marquee-item">Corporate Gifts</span>
-  </div>
-</div>
 
 <!-- CATEGORIES -->
 <section class="categories" id="categories">
@@ -363,10 +339,68 @@ let allProducts = [], allCategories = [], settings = {}, activeFilter = 'all';
 // ── INIT ──
 async function init() {
   await loadSettings();
+  await loadBanners(); // <-- Yeh nayi line add karein
   await loadCategories();
   await loadProducts();
   await loadGallery();
 }
+
+// ── BANNERS (Auto-Slider) ──
+let activeBanners = [];
+let currentBannerIndex = 0;
+let bannerInterval;
+
+async function loadBanners() {
+  try {
+    const { data, error } = await sb.from('banners')
+      .select('*')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false });
+
+    if (data && data.length > 0) {
+      activeBanners = data;
+      
+      showBanner(0);
+      
+      if (activeBanners.length > 1) {
+        if (bannerInterval) clearInterval(bannerInterval); 
+        
+        bannerInterval = setInterval(() => {
+          currentBannerIndex++;
+          if (currentBannerIndex >= activeBanners.length) {
+            currentBannerIndex = 0; 
+          }
+          showBanner(currentBannerIndex);
+        }, 4000); 
+      }
+    }
+  } catch (e) {
+    console.log('Banners load karne mein error:', e);
+  }
+}
+
+// Banner screen par dikhane wala function
+function showBanner(index) {
+  const banner = activeBanners[index];
+  const heroSection = document.querySelector('.hero');
+  const titleEl = document.querySelector('.hero-title');
+  const subEl = document.querySelector('.hero-sub');
+
+  heroSection.style.transition = "background-image 0.8s ease-in-out";
+
+  // Admin se text aaya hai toh dikhega, warna khali rahega
+  titleEl.innerHTML = banner.title ? banner.title : "";
+  subEl.innerHTML = banner.subtitle ? banner.subtitle : "";
+  
+  if (banner.image_url) {
+    heroSection.style.backgroundImage = `linear-gradient(rgba(26, 26, 46, 0.3), rgba(26, 26, 46, 0.3)), url('${banner.image_url}')`;
+    heroSection.style.backgroundSize = 'contain'; 
+    heroSection.style.backgroundRepeat = 'no-repeat';
+    heroSection.style.backgroundPosition = 'center';
+  }
+}
+     
+ 
 
 // ── SETTINGS ──
 async function loadSettings() {

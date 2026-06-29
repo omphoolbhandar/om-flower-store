@@ -1,77 +1,61 @@
 /* ============================================================
-   Om Flower Store — Cart utilities
-   Cart lives in localStorage so it survives page reloads without
-   needing customer accounts. Shape: [{id, name, price, imageUrl, qty}]
+   Om Flower Store — Cart page logic
    ============================================================ */
 
-const CART_KEY = 'omFlowerCart';
+renderCartPage();
 
-function getCart() {
-  try {
-    return JSON.parse(localStorage.getItem(CART_KEY)) || [];
-  } catch {
-    return [];
-  }
-}
-
-function saveCart(cart) {
-  localStorage.setItem(CART_KEY, JSON.stringify(cart));
-  renderCartBadge();
-}
-
-function addToCart(product, qty = 1) {
+function renderCartPage() {
   const cart = getCart();
-  const existing = cart.find(item => item.id === product.id);
-  if (existing) {
-    existing.qty += qty;
-  } else {
-    cart.push({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      imageUrl: (product.imageUrls && product.imageUrls[0]) || '',
-      qty,
+  const listEl = document.getElementById('cartList');
+  const summaryEl = document.getElementById('cartSummary');
+  const emptyEl = document.getElementById('emptyState');
+
+  if (cart.length === 0) {
+    listEl.innerHTML = '';
+    summaryEl.classList.add('hidden');
+    emptyEl.classList.remove('hidden');
+    return;
+  }
+  emptyEl.classList.add('hidden');
+  summaryEl.classList.remove('hidden');
+
+  listEl.innerHTML = cart.map((item) => `
+    <div class="cart-row" data-id="${item.id}">
+      ${item.imageUrl
+        ? `<img src="${item.imageUrl}" alt="">`
+        : `<div style="font-size:1.8rem; display:flex; align-items:center; justify-content:center;">${pickFlowerEmoji(item.id)}</div>`}
+      <div>
+        <div class="name">${escapeHtml(item.name)}</div>
+        <div class="unit-price">₹${item.price.toLocaleString('en-IN')} each</div>
+        <div class="qty-stepper" style="margin-top:0.5rem">
+          <button type="button" class="qty-minus">−</button>
+          <span>${item.qty}</span>
+          <button type="button" class="qty-plus">+</button>
+        </div>
+      </div>
+      <div class="line-total">₹${(item.price * item.qty).toLocaleString('en-IN')}</div>
+      <button type="button" class="remove-btn">Remove</button>
+    </div>
+  `).join('');
+
+  listEl.querySelectorAll('.cart-row').forEach((row) => {
+    const id = row.dataset.id;
+    const item = cart.find(i => i.id === id);
+    row.querySelector('.qty-minus').addEventListener('click', () => {
+      updateCartQty(id, item.qty - 1);
+      renderCartPage();
     });
-  }
-  saveCart(cart);
-}
+    row.querySelector('.qty-plus').addEventListener('click', () => {
+      updateCartQty(id, item.qty + 1);
+      renderCartPage();
+    });
+    row.querySelector('.remove-btn').addEventListener('click', () => {
+      removeFromCart(id);
+      renderCartPage();
+    });
+  });
 
-function updateCartQty(productId, qty) {
-  let cart = getCart();
-  if (qty <= 0) {
-    cart = cart.filter(item => item.id !== productId);
-  } else {
-    const item = cart.find(i => i.id === productId);
-    if (item) item.qty = qty;
-  }
-  saveCart(cart);
+  const total = getCartTotal();
+  document.getElementById('subtotal').textContent = `₹${total.toLocaleString('en-IN')}`;
+  document.getElementById('total').textContent = `₹${total.toLocaleString('en-IN')}`;
 }
-
-function removeFromCart(productId) {
-  const cart = getCart().filter(item => item.id !== productId);
-  saveCart(cart);
-}
-
-function clearCart() {
-  saveCart([]);
-}
-
-function getCartCount() {
-  return getCart().reduce((sum, item) => sum + item.qty, 0);
-}
-
-function getCartTotal() {
-  return getCart().reduce((sum, item) => sum + item.price * item.qty, 0);
-}
-
-// Updates the little badge on the cart icon in the header, if present
-// on the current page.
-function renderCartBadge() {
-  const badge = document.getElementById('cartCount');
-  if (!badge) return;
-  const count = getCartCount();
-  badge.textContent = count;
-  badge.classList.toggle('hidden', count === 0);
-}
-
-document.addEventListener('DOMContentLoaded', renderCartBadge);

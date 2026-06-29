@@ -8,37 +8,39 @@ function escapeHtml(str) {
   }[c]));
 }
 
-function bloomDotSvg() {
-  return `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-2px">
-    <circle cx="12" cy="6" r="4.2"/><circle cx="17.3" cy="9.8" r="4.2"/>
-    <circle cx="15.4" cy="16" r="4.2"/><circle cx="8.6" cy="16" r="4.2"/>
-    <circle cx="6.7" cy="9.8" r="4.2"/><circle cx="12" cy="12" r="2.6" fill="#fffbf2"/>
-  </svg>`;
-}
+const FLOWER_EMOJIS = ['🌸', '🌺', '🌹', '🌼', '💐', '🌷', '🌻', '🏵️'];
 
-function noImageSvg() {
-  return `<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
-    <rect x="3" y="3" width="18" height="18" rx="3"/>
-    <circle cx="9" cy="9" r="1.6" fill="currentColor" stroke="none"/>
-    <path d="M3 17l5-5 4 4 3-3 5 5" />
-  </svg>`;
+// Deterministic per-product emoji fallback (same product always gets the
+// same flower icon) for cards/galleries that have no uploaded photo yet.
+function pickFlowerEmoji(seed) {
+  const str = String(seed || '');
+  let sum = 0;
+  for (let i = 0; i < str.length; i++) sum += str.charCodeAt(i);
+  return FLOWER_EMOJIS[sum % FLOWER_EMOJIS.length];
 }
 
 // Renders one product card for the home/shop grids.
 function productCardHtml(p) {
   const thumbUrl = (p.imageUrls && p.imageUrls[0]) || '';
   const inStock = p.inStock !== false;
+  const imgInner = thumbUrl
+    ? `<img src="${thumbUrl}" alt="${escapeHtml(p.name)}">`
+    : pickFlowerEmoji(p.id);
+
   return `
     <div class="product-card">
-      <a href="product.html?id=${p.id}" class="thumb">${thumbUrl ? `<img src="${thumbUrl}" alt="${escapeHtml(p.name)}">` : noImageSvg()}</a>
-      <div class="body">
-        <a href="product.html?id=${p.id}"><h3>${escapeHtml(p.name || 'Untitled')}</h3></a>
-        <div class="meta">${escapeHtml(p.category || '')}</div>
-        <div class="price">₹${Number(p.price || 0).toLocaleString('en-IN')}</div>
-        <span class="stock-badge ${inStock ? 'in' : 'out'}">${bloomDotSvg()} ${inStock ? 'In stock' : 'Out of stock'}</span>
-        <button class="btn-primary add-to-cart-btn" data-id="${p.id}" ${inStock ? '' : 'disabled'}>
-          ${inStock ? 'Add to cart' : 'Out of stock'}
-        </button>
+      <a href="product.html?id=${p.id}" class="product-img-link">
+        <div class="product-img">${imgInner}</div>
+      </a>
+      <div class="product-info">
+        <span class="product-tag${inStock ? '' : ' out'}">${escapeHtml(p.category || (inStock ? 'Fresh' : 'Out of stock'))}</span>
+        <a href="product.html?id=${p.id}"><div class="product-name">${escapeHtml(p.name || 'Untitled')}</div></a>
+        <div class="product-footer">
+          <span class="product-price">₹${Number(p.price || 0).toLocaleString('en-IN')}</span>
+          ${inStock
+            ? `<button class="add-btn add-to-cart-btn" data-id="${p.id}" title="Cart mein daalen">+</button>`
+            : `<span class="out-of-stock-label">Unavailable</span>`}
+        </div>
       </div>
     </div>
   `;
@@ -53,8 +55,8 @@ function attachAddToCartHandlers(container, products) {
       if (!product) return;
       addToCart(product, 1);
       const original = btn.textContent;
-      btn.textContent = 'Added ✓';
-      setTimeout(() => { btn.textContent = original; }, 1200);
+      btn.textContent = '✓';
+      setTimeout(() => { btn.textContent = original; }, 1000);
     });
   });
 }

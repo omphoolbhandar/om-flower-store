@@ -26,10 +26,10 @@
   // Fewer particles on small screens / inner pages so it stays decorative,
   // not distracting while shopping or filling a form.
   const density = canvas.dataset.density || 'normal';
-  const counts = density === 'light' ? { petals: 14, flowers: 8 } : { petals: 28, flowers: 18 };
+  const counts = density === 'light' ? { petals: 25, flowers: 16 } : { petals: 50, flowers: 38 };
 
   function Petal() {
-    this.x = Math.random() * W;
+    this.x = Math.random() * window.innerWidth;
     this.y = Math.random() * H;
     this.r = 3 + Math.random() * 5;
     this.vx = (Math.random() - 0.5) * 0.5;
@@ -59,7 +59,7 @@
 
   function Flower() {
     this.emoji = FLOWER_EMOJIS[Math.floor(Math.random() * FLOWER_EMOJIS.length)];
-    this.x = Math.random() * W;
+    this.x = Math.random() * window.innerWidth;
     this.y = Math.random() * H;
     this.size = 13 + Math.random() * 16;
     this.vx = (Math.random() - 0.5) * 0.4;

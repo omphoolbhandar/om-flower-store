@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Admin Panel – Om Flower Store</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f1a;--sidebar:#161624;--card:#1e1e30;--border:rgba(255,255,255,0.08);
+  --rose:#C45C8A;--blush:#E8C4D8;--ivory:#F5EDD6;--green:#25D366;
+  --red:#e74c3c;--yellow:#f39c12;--blue:#3498db;
+  --text:rgba(245,237,214,0.9);--muted:rgba(245,237,214,0.45);
+}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;min-height:100vh}
+
+/* LOGIN */
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg)}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2.5rem;width:360px;text-align:center}
+.login-logo{font-size:3rem;margin-bottom:.5rem}
+.login-title{font-size:1.4rem;font-weight:700;color:var(--blush);margin-bottom:.3rem}
+.login-sub{font-size:.82rem;color:var(--muted);margin-bottom:2rem}
+.login-box input{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;color:var(--ivory);font-size:.95rem;outline:none;margin-bottom:1rem;transition:border-color .2s}
+.login-box input:focus{border-color:var(--rose)}
+.login-box button{width:100%;background:var(--rose);color:#fff;border:none;border-radius:10px;padding:.8rem;font-size:1rem;font-weight:600;cursor:pointer;transition:.2s}
+.login-box button:hover{background:#a03470}
+.login-err{color:var(--red);font-size:.82rem;margin-top:.5rem;display:none}
+
+/* APP */
+#app{display:none;min-height:100vh}
+.layout{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:220px;background:var(--sidebar);border-right:1px solid var(--border);padding:1.2rem 0;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50}
+.sidebar-logo{padding:.8rem 1.4rem 1.2rem;border-bottom:1px solid var(--border);margin-bottom:.8rem}
+.sidebar-logo .logo-text{font-size:1.1rem;font-weight:700;color:var(--blush)}
+.sidebar-logo .logo-sub{font-size:.7rem;color:var(--muted)}
+.nav-item{display:flex;align-items:center;gap:.7rem;padding:.65rem 1.4rem;color:var(--muted);font-size:.85rem;cursor:pointer;border-left:3px solid transparent;transition:.2s}
+.nav-item:hover{color:var(--ivory);background:rgba(255,255,255,.04)}
+.nav-item.active{color:var(--blush);border-left-color:var(--rose);background:rgba(196,92,138,.08)}
+.nav-item .icon{font-size:1.1rem;width:22px;text-align:center}
+.sidebar-footer{margin-top:auto;padding:1rem 1.4rem;border-top:1px solid var(--border)}
+.logout-btn{background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.3);color:var(--red);padding:.55rem 1rem;border-radius:8px;font-size:.82rem;cursor:pointer;width:100%;transition:.2s}
+.logout-btn:hover{background:rgba(231,76,60,.2)}
+
+/* MAIN */
+.main{margin-left:220px;padding:1.5rem;flex:1}
+.page{display:none}
+.page.active{display:block}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.8rem}
+.page-title{font-size:1.4rem;font-weight:700;color:var(--ivory)}
+.page-sub{font-size:.82rem;color:var(--muted);margin-top:.2rem}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;margin-bottom:2rem}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem}
+.stat-card .s-icon{font-size:1.8rem;margin-bottom:.5rem}
+.stat-card .s-num{font-size:1.8rem;font-weight:700;color:var(--blush)}
+.stat-card .s-label{font-size:.75rem;color:var(--muted)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.1rem;border-radius:8px;font-size:.85rem;font-weight:500;cursor:pointer;border:none;transition:.2s}
+.btn-rose{background:var(--rose);color:#fff}.btn-rose:hover{background:#a03470}
+.btn-green{background:var(--green);color:#fff}
+.btn-red{background:rgba(231,76,60,.15);color:var(--red);border:1px solid rgba(231,76,60,.3)}.btn-red:hover{background:rgba(231,76,60,.25)}
+.btn-ghost{background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border)}.btn-ghost:hover{background:rgba(255,255,255,.1)}
+.btn-sm{padding:.35rem .75rem;font-size:.78rem}
+
+/* TABLE */
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.table-search{padding:1rem 1.2rem;border-bottom:1px solid var(--border)}
+.table-search input{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:.5rem .9rem;color:var(--ivory);font-size:.85rem;outline:none;width:260px}
+table{width:100%;border-collapse:collapse}
+thead{background:rgba(255,255,255,.04)}
+th{padding:.8rem 1rem;text-align:left;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:.8rem 1rem;font-size:.85rem;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.badge{display:inline-block;padding:.2rem .6rem;border-radius:50px;font-size:.7rem;font-weight:500}
+.badge-green{background:rgba(37,211,102,.15);color:#25d366}
+.badge-red{background:rgba(231,76,60,.15);color:var(--red)}
+.badge-rose{background:rgba(196,92,138,.15);color:var(--rose)}
+.thumb{width:44px;height:44px;border-radius:8px;object-fit:cover;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:1.4rem}
+.thumb img{width:100%;height:100%;object-fit:cover;border-radius:8px}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:1rem}
+.overlay.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:18px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 1.5rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--card);z-index:1}
+.modal-title{font-size:1.05rem;font-weight:600;color:var(--ivory)}
+.modal-close{background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;padding:.2rem}
+.modal-body{padding:1.5rem}
+.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:.7rem}
+
+/* FORM */
+.form-group{margin-bottom:1.2rem}
+.form-label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:.45rem;letter-spacing:.05em}
+.form-input,.form-select,.form-textarea{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:10px;padding:.7rem 1rem;color:var(--ivory);font-size:.9rem;outline:none;transition:border-color .2s;font-family:inherit}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--rose)}
+.form-select option{background:var(--card)}
+.form-textarea{resize:vertical;min-height:80px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.form-check{display:flex;align-items:center;gap:.6rem;cursor:pointer;font-size:.88rem}
+.form-check input{width:16px;height:16px;accent-color:var(--rose)}
+
+/* IMAGE UPLOAD */
+.img-upload-area{border:2px dashed rgba(232,196,216,.25);border-radius:12px;padding:1.5rem;text-align:center;cursor:pointer;transition:.2s;position:relative}
+.img-upload-area:hover{border-color:var(--rose);background:rgba(196,92,138,.05)}
+.img-upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.img-preview{max-width:100%;max-height:180px;border-radius:8px;margin-top:1rem;object-fit:contain}
+.upload-progress{height:4px;background:rgba(255,255,255,.1);border-radius:2px;margin-top:.8rem;overflow:hidden;display:none}
+.upload-progress-bar{height:100%;background:var(--rose);border-radius:2px;transition:width .3s}
+
+/* GALLERY GRID */
+.admin-gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.8rem;margin-top:1rem}
+.admin-gallery-item{position:relative;border-radius:10px;overflow:hidden;aspect-ratio:1;border:1px solid var(--border)}
+.admin-gallery-item img{width:100%;height:100%;object-fit:cover}
+.admin-gallery-item .del-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center}
+.admin-gallery-item:hover .del-overlay{display:flex}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;padding:.7rem 1.3rem;border-radius:10px;font-size:.88rem;z-index:9999;transform:translateY(100px);opacity:0;transition:.3s;min-width:200px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{background:#1a4a2e;border:1px solid #25D366;color:#25D366}
+.toast.error{background:#4a1a1a;border:1px solid var(--red);color:var(--red)}
+.toast.info{background:#1a2a4a;border:1px solid var(--blue);color:var(--blue)}
+
+/* SETTINGS */
+.settings-grid{display:grid;gap:1rem;max-width:560px}
+.settings-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.4rem}
+.settings-card h3{font-size:.88rem;font-weight:600;color:var(--blush);margin-bottom:1rem}
+
+/* EMPTY */
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--muted)}
+.empty-state .e-icon{font-size:2.5rem;margin-bottom:.8rem}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .sidebar{width:60px;overflow:hidden}
+  .sidebar .logo-text,.sidebar .logo-sub,.nav-item span:not(.icon),.sidebar-footer .logout-btn span{display:none}
+  .nav-item{padding:.65rem;justify-content:center}
+  .main{margin-left:60px;padding:1rem}
+  .form-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">🌸</div>
+    <div class="login-title">Om Flower Store</div>
+    <div class="login-sub">Admin Panel – Sirf aapke liye</div>
+    <input type="password" id="loginPass" placeholder="Password daalo" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <button onclick="doLogin()">Login Karein</button>
+    <div class="login-err" id="loginErr">❌ Galat password!</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-text">ॐ Om Flowers</div>
+        <div class="logo-sub">Admin Panel</div>
+      </div>
+      <div class="nav-item active" onclick="showPage('dashboard')"><span class="icon">📊</span><span>Dashboard</span></div>
+      <div class="nav-item" onclick="showPage('products')"><span class="icon">💐</span><span>Products</span></div>
+      <div class="nav-item" onclick="showPage('categories')"><span class="icon">🗂️</span><span>Categories</span></div>
+      <div class="nav-item" onclick="showPage('gallery')"><span class="icon">🖼️</span><span>Gallery</span></div>
+      <div class="nav-item" onclick="showPage('banners')"><span class="icon">🎨</span><span>Banners</span></div>
+      <div class="nav-item" onclick="showPage('settings')"><span class="icon">⚙️</span><span>Settings</span></div>
+      <div class="sidebar-footer">
+        <button class="logout-btn" onclick="doLogout()">🚪 <span>Logout</span></button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="page-header">
+          <div><div class="page-title">Dashboard</div><div class="page-sub">Om Flower Store ka overview</div></div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="s-icon">💐</div><div class="s-num" id="statProducts">-</div><div class="s-label">Total Products</div></div>
+          <div class="stat-card"><div class="s-icon">🗂️</div><div class="s-num" id="statCategories">-</div><div class="s-label">Categories</div></div>
+          <div class="stat-card"><div class="s-icon">🖼️</div><div class="s-num" id="statGallery">-</div><div class="s-label">Gallery Photos</div></div>
+          <div class="stat-card"><div class="s-icon">⭐</div><div class="s-num" id="statFeatured">-</div><div class="s-label">Featured</div></div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.4rem">
+          <div style="font-size:.88rem;color:var(--blush);font-weight:600;margin-bottom:.8rem">⚡ Quick Actions</div>
+          <div style="display:flex;gap:.8rem;flex-wrap:wrap">
+            <button class="btn btn-rose" onclick="showPage('products');openProductModal()">+ Product Add Karo</button>
+            <button class="btn btn-ghost" onclick="showPage('categories');openCatModal()">+ Category Add Karo</button>
+            <button class="btn btn-ghost" onclick="showPage('gallery')">📸 Gallery Manage Karo</button>
+            <button class="btn btn-ghost" onclick="showPage('settings')">⚙️ Settings</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRODUCTS -->
+      <div class="page" id="page-products">
+        <div class="page-header">
+          <div><div class="page-title">Products</div><div class="page-sub">Sare products manage karo</div></div>
+          <button class="btn btn-rose" onclick="openProductModal()">+ Naya Product</button>
+        </div>
+        <div class="table-wrap">
+          <div class="table-search">
+            <input type="text" id="prodSearch" placeholder="🔍 Product dhundho..." oninput="filterProdTable()"/>
+          </div>
+          <table>
+            <thead><tr><th>Photo</th><th>Naam</th><th>Category</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="prodTableBody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CATEGORIES -->
+      <div class="page" id="page-categories">
+        <div class="page-header">
+          <div><div class="page-title">Categories</div><div class="page-sub">Product categories manage karo</div></div>
+          <button class="btn btn-rose" onclick="openCatModal()">+ Nayi Category</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Photo</th><th>Naam</th><th>Description</th><th>Products</th><th>Actions</th></tr></thead>
+            <tbody id="catTableBody"><tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted)">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- GALLERY -->
+      <div class="page" id="page-gallery">
+        <div class="page-header">
+          <div><div class="page-title">Gallery</div><div class="page-sub">Dukan ki photos manage karo</div></div>
+          <button class="btn btn-rose" onclick="openGalleryUpload()">+ Photo Upload</button>
+        </div>
+        <div class="admin-gallery-grid" id="adminGalleryGrid">
+          <div class="empty-state"><div class="e-icon">🖼️</div><p>Loading...</p></div>
+        </div>
+      </div>
+
+      <!-- BANNERS -->
+      <div class="page" id="page-banners">
+        <div class="page-header">
+          <div><div class="page-title">Banners</div><div class="page-sub">Hero section banners manage karo</div></div>
+          <button class="btn btn-rose" onclick="openBannerModal()">+ Naya Banner</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Photo</th><th>Title</th><th>Subtitle</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="bannerTableBody"><tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted)">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="page" id="page-settings">
+        <div class="page-header">
+          <div><div class="page-title">Settings</div><div class="page-sub">Dukan ki basic settings</div></div>
+        </div>
+        <div class="settings-grid">
+          <div class="settings-card">
+            <h3>🏪 Dukan Ki Jankari</h3>
+            <div class="form-group"><label class="form-label">Dukan Ka Naam</label><input class="form-input" id="set_shop_name" placeholder="Om Flower Store"/></div>
+            <div class="form-group"><label class="form-label">Phone Number</label><input class="form-input" id="set_shop_phone" placeholder="99990-00000"/></div>
+            <div class="form-group"><label class="form-label">Address</label><input class="form-input" id="set_shop_address" placeholder="Main Bazar, Shahar"/></div>
+            <div class="form-group"><label class="form-label">WhatsApp Number (Country code ke saath, e.g. 919999000000)</label><input class="form-input" id="set_whatsapp_number" placeholder="919999000000"/></div>
+          </div>
+          <div class="settings-card">
+            <h3>🔐 Admin Password Badlo</h3>
+            <div class="form-group"><label class="form-label">Naya Password</label><input class="form-input" id="set_new_pass" type="password" placeholder="Naya password"/></div>
+            <div class="form-group"><label class="form-label">Confirm Password</label><input class="form-input" id="set_confirm_pass" type="password" placeholder="Dobara likho"/></div>
+          </div>
+          <button class="btn btn-rose" onclick="saveSettings()" style="width:fit-content">💾 Settings Save Karo</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- PRODUCT MODAL -->
+<div class="overlay" id="productModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="productModalTitle">Naya Product</div>
+      <button class="modal-close" onclick="closeModal('productModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="prod_id"/>
+      <div class="form-group"><label class="form-label">Product Ka Naam *</label><input class="form-input" id="prod_name" placeholder="e.g. Red Rose Bouquet"/></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Price (₹) *</label><input class="form-input" id="prod_price" type="number" placeholder="349"/></div>
+        <div class="form-group"><label class="form-label">Category</label>
+          <select class="form-select" id="prod_cat"><option value="">-- Category chunein --</option></select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="prod_desc" placeholder="Product ki jankari..."></textarea></div>
+      <div class="form-group"><label class="form-label">WhatsApp Message (order ke liye)</label><input class="form-input" id="prod_wa" placeholder="Namaste! Mujhe yeh product chahiye..."/></div>
+      <div class="form-group">
+        <label class="form-label">Product Photo</label>
+        <div class="img-upload-area" id="prodImgArea">
+          <input type="file" accept="image/*" id="prodImgFile" onchange="previewAndUploadImage('prodImgFile','prodImgPreview','prod_image_url','prodUploadProgress')"/>
+          <div>📸 Photo chunein ya drag karein</div>
+          <div style="font-size:.75rem;color:var(--muted);margin-top:.3rem">JPG, PNG, WebP (max 5MB)</div>
+          <img id="prodImgPreview" class="img-preview" style="display:none"/>
+          <div class="upload-progress" id="prodUploadProgress"><div class="upload-progress-bar" id="prodUploadProgressBar"></div></div>
+        </div>
+        <input type="hidden" id="prod_image_url"/>
+      </div>
+      <div style="display:flex;gap:1.5rem;flex-wrap:wrap">
+        <label class="form-check"><input type="checkbox" id="prod_featured"/> ⭐ Featured product</label>
+        <label class="form-check"><input type="checkbox" id="prod_available" checked/> ✅ Available hai</label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('productModal')">Cancel</button>
+      <button class="btn btn-rose" onclick="saveProduct()">💾 Save Karo</button>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORY MODAL -->
+<div class="overlay" id="catModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="catModalTitle">Nayi Category</div>
+      <button class="modal-close" onclick="closeModal('catModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="cat_id"/>
+      <div class="form-group"><label class="form-label">Category Ka Naam *</label><input class="form-input" id="cat_name" placeholder="e.g. Rose, Bouquet, Pooja Phool"/></div>
+      <div class="form-group"><label class="form-label">Description</label><input class="form-input" id="cat_desc" placeholder="Category ki jankari..."/></div>
+      <div class="form-group">
+        <label class="form-label">Category Photo</label>
+        <div class="img-upload-area">
+          <input type="file" accept="image/*" id="catImgFile" onchange="previewAndUploadImage('catImgFile','catImgPreview','cat_image_url','catUploadProgress')"/>
+          <div>📸 Photo chunein</div>
+          <img id="catImgPreview" class="img-preview" style="display:none"/>
+          <div class="upload-progress" id="catUploadProgress"><div class="upload-progress-bar" id="catUploadProgressBar"></div></div>
+        </div>
+        <input type="hidden" id="cat_image_url"/>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('catModal')">Cancel</button>
+      <button class="btn btn-rose" onclick="saveCategory()">💾 Save Karo</button>
+    </div>
+  </div>
+</div>
+
+<!-- GALLERY UPLOAD MODAL -->
+<div class="overlay" id="galleryModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Gallery Photo Upload</div>
+      <button class="modal-close" onclick="closeModal('galleryModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Photo chunein</label>
+        <div class="img-upload-area">
+          <input type="file" accept="image/*" id="galImgFile" onchange="previewAndUploadImage('galImgFile','galImgPreview','gal_image_url','galUploadProgress')"/>
+          <div>📸 Photo chunein</div>
+          <img id="galImgPreview" class="img-preview" style="display:none"/>
+          <div class="upload-progress" id="galUploadProgress"><div class="upload-progress-bar" id="galUploadProgressBar"></div></div>
+        </div>
+        <input type="hidden" id="gal_image_url"/>
+      </div>
+      <div class="form-group"><label class="form-label">Caption (optional)</label><input class="form-input" id="gal_caption" placeholder="e.g. Wedding decoration 2024"/></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('galleryModal')">Cancel</button>
+      <button class="btn btn-rose" onclick="saveGalleryPhoto()">💾 Save Karo</button>
+    </div>
+  </div>
+</div>
+
+<!-- BANNER MODAL -->
+<div class="overlay" id="bannerModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="bannerModalTitle">Naya Banner</div>
+      <button class="modal-close" onclick="closeModal('bannerModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="banner_id"/>
+      <div class="form-group"><label class="form-label">Title</label><input class="form-input" id="banner_title" placeholder="e.g. Summer Sale"/></div>
+      <div class="form-group"><label class="form-label">Subtitle</label><input class="form-input" id="banner_subtitle" placeholder="e.g. 20% off sab flowers pe"/></div>
+      <div class="form-group">
+        <label class="form-label">Banner Photo</label>
+        <div class="img-upload-area">
+          <input type="file" accept="image/*" id="bannerImgFile" onchange="previewAndUploadImage('bannerImgFile','bannerImgPreview','banner_image_url','bannerUploadProgress')"/>
+          <div>📸 Photo chunein</div>
+          <img id="bannerImgPreview" class="img-preview" style="display:none"/>
+          <div class="upload-progress" id="bannerUploadProgress"><div class="upload-progress-bar" id="bannerUploadProgressBar"></div></div>
+        </div>
+        <input type="hidden" id="banner_image_url"/>
+      </div>
+      <label class="form-check"><input type="checkbox" id="banner_active" checked/> ✅ Active hai</label>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('bannerModal')">Cancel</button>
+      <button class="btn btn-rose" onclick="saveBanner()">💾 Save Karo</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="overlay" id="confirmModal">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-body" style="text-align:center;padding:2rem">
+      <div style="font-size:2.5rem;margin-bottom:.8rem">⚠️</div>
+      <div style="font-size:1rem;font-weight:600;margin-bottom:.5rem" id="confirmMsg">Kya aap sure hain?</div>
+      <div style="font-size:.82rem;color:var(--muted)">Yeh action wapas nahi hoga.</div>
+    </div>
+    <div class="modal-footer" style="justify-content:center">
+      <button class="btn btn-ghost" onclick="closeModal('confirmModal')">Cancel</button>
+      <button class="btn btn-red" id="confirmOkBtn">Haan, Delete Karo</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://jxbqnkrgcunzadvjiwvg.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp4YnFua3JnY3VuemFkdmppd3ZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2OTcyMTIsImV4cCI6MjA5ODI3MzIxMn0.vU4I6WKdsJLgH4afszIYmfLptmm1RMlJ4RApDDZaV-M';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let allProducts=[], allCategories=[], adminPass='admin123';
+
+// ── LOGIN ──
+async function doLogin() {
+  const pass = document.getElementById('loginPass').value;
+  try {
+    const { data } = await sb.from('settings').select('value').eq('key','admin_password').single();
+    const correctPass = data?.value || 'admin123';
+    if (pass === correctPass) {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      adminPass = correctPass;
+      loadAll();
+    } else {
+      document.getElementById('loginErr').style.display = 'block';
+    }
+  } catch(e) {
+    if (pass === 'admin123') {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      loadAll();
+    } else {
+      document.getElementById('loginErr').style.display = 'block';
+    }
+  }
+}
+
+function doLogout() {
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginErr').style.display = 'none';
+}
+
+// ── NAVIGATION ──
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if(n.getAttribute('onclick')?.includes(name)) n.classList.add('active');
+  });
+}
+
+// ── LOAD ALL ──
+async function loadAll() {
+  await loadCategories();
+  await loadProducts();
+  await loadGallery();
+  await loadBanners();
+  await loadSettings();
+  updateStats();
+}
+
+// ── STATS ──
+function updateStats() {
+  document.getElementById('statProducts').textContent = allProducts.length;
+  document.getElementById('statCategories').textContent = allCategories.length;
+  document.getElementById('statFeatured').textContent = allProducts.filter(p=>p.is_featured).length;
+}
+
+// ── CATEGORIES ──
+async function loadCategories() {
+  const { data } = await sb.from('categories').select('*').order('name');
+  allCategories = data || [];
+  renderCatTable();
+  fillCatSelect();
+}
+
+function fillCatSelect() {
+  const sel = document.getElementById('prod_cat');
+  sel.innerHTML = '<option value="">-- Category chunein --</option>' +
+    allCategories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+}
+
+function renderCatTable() {
+  const tbody = document.getElementById('catTableBody');
+  if(!allCategories.length){tbody.innerHTML='<tr><td colspan="5" class="empty-state"><div class="e-icon">🗂️</div><p>Koi category nahi hai</p></td></tr>';return}
+  tbody.innerHTML = allCategories.map(c => {
+    const prodCount = allProducts.filter(p=>p.category_id===c.id).length;
+    const img = c.image_url ? `<div class="thumb"><img src="${c.image_url}" alt="${c.name}"/></div>` : `<div class="thumb">🌸</div>`;
+    return `<tr>
+      <td>${img}</td>
+      <td><strong>${c.name}</strong></td>
+      <td style="color:var(--muted)">${c.description||'-'}</td>
+      <td><span class="badge badge-rose">${prodCount} products</span></td>
+      <td style="display:flex;gap:.5rem;padding-top:.9rem">
+        <button class="btn btn-ghost btn-sm" onclick="editCategory('${c.id}')">✏️</button>
+        <button class="btn btn-red btn-sm" onclick="confirmDelete('category','${c.id}','${c.name}')">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function openCatModal(cat=null) {
+  document.getElementById('cat_id').value = cat?.id||'';
+  document.getElementById('cat_name').value = cat?.name||'';
+  document.getElementById('cat_desc').value = cat?.description||'';
+  document.getElementById('cat_image_url').value = cat?.image_url||'';
+  const prev = document.getElementById('catImgPreview');
+  if(cat?.image_url){prev.src=cat.image_url;prev.style.display='block'}else{prev.style.display='none'}
+  document.getElementById('catModalTitle').textContent = cat ? 'Category Edit Karo' : 'Nayi Category';
+  openModal('catModal');
+}
+
+function editCategory(id) {
+  const cat = allCategories.find(c=>c.id===id);
+  if(cat) openCatModal(cat);
+}
+
+async function saveCategory() {
+  const name = document.getElementById('cat_name').value.trim();
+  if(!name){showToast('Naam zaroori hai!','error');return}
+  const id = document.getElementById('cat_id').value;
+  const data = {name, description:document.getElementById('cat_desc').value.trim(), image_url:document.getElementById('cat_image_url').value||null};
+  const { error } = id ? await sb.from('categories').update(data).eq('id',id) : await sb.from('categories').insert(data);
+  if(error){showToast('Error: '+error.message,'error');return}
+  showToast(id?'Category update ho gayi!':'Category add ho gayi!','success');
+  closeModal('catModal');
+  await loadCategories();
+  updateStats();
+}
+
+// ── PRODUCTS ──
+async function loadProducts() {
+  const { data } = await sb.from('products').select('*,categories(name)').order('created_at',{ascending:false});
+  allProducts = data || [];
+  renderProdTable();
+  updateStats();
+}
+
+function renderProdTable(filter='') {
+  const tbody = document.getElementById('prodTableBody');
+  let prods = allProducts;
+  if(filter) prods = prods.filter(p=>p.name.toLowerCase().includes(filter.toLowerCase()));
+  if(!prods.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Koi product nahi mila</td></tr>';return}
+  tbody.innerHTML = prods.map(p => {
+    const img = p.image_url ? `<div class="thumb"><img src="${p.image_url}" alt="${p.name}"/></div>` : `<div class="thumb">💐</div>`;
+    const status = p.is_available ? '<span class="badge badge-green">Available</span>' : '<span class="badge badge-red">Out of Stock</span>';
+    const featured = p.is_featured ? '<span class="badge badge-rose" style="margin-left:.3rem">⭐</span>' : '';
+    return `<tr>
+      <td>${img}</td>
+      <td><strong>${p.name}</strong>${featured}</td>
+      <td style="color:var(--muted)">${p.categories?.name||'-'}</td>
+      <td><strong style="color:var(--blush)">₹${Number(p.price).toLocaleString('en-IN')}</strong></td>
+      <td>${status}</td>
+      <td style="display:flex;gap:.5rem;padding-top:.9rem">
+        <button class="btn btn-ghost btn-sm" onclick="editProduct('${p.id}')">✏️</button>
+        <button class="btn btn-red btn-sm" onclick="confirmDelete('product','${p.id}','${p.name}')">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filterProdTable() {
+  renderProdTable(document.getElementById('prodSearch').value);
+}
+
+function openProductModal(prod=null) {
+  document.getElementById('prod_id').value = prod?.id||'';
+  document.getElementById('prod_name').value = prod?.name||'';
+  document.getElementById('prod_price').value = prod?.price||'';
+  document.getElementById('prod_desc').value = prod?.description||'';
+  document.getElementById('prod_wa').value = prod?.whatsapp_msg||'';
+  document.getElementById('prod_image_url').value = prod?.image_url||'';
+  document.getElementById('prod_featured').checked = prod?.is_featured||false;
+  document.getElementById('prod_available').checked = prod?.is_available!==false;
+  document.getElementById('prod_cat').value = prod?.category_id||'';
+  const prev = document.getElementById('prodImgPreview');
+  if(prod?.image_url){prev.src=prod.image_url;prev.style.display='block'}else{prev.style.display='none'}
+  document.getElementById('productModalTitle').textContent = prod ? 'Product Edit Karo' : 'Naya Product';
+  openModal('productModal');
+}
+
+function editProduct(id) {
+  const prod = allProducts.find(p=>p.id===id);
+  if(prod) openProductModal(prod);
+}
+
+async function saveProduct() {
+  const name = document.getElementById('prod_name').value.trim();
+  const price = document.getElementById('prod_price').value;
+  if(!name||!price){showToast('Naam aur price zaroori hain!','error');return}
+  const id = document.getElementById('prod_id').value;
+  const data = {
+    name, price:Number(price),
+    description:document.getElementById('prod_desc').value.trim(),
+    whatsapp_msg:document.getElementById('prod_wa').value.trim(),
+    category_id:document.getElementById('prod_cat').value||null,
+    image_url:document.getElementById('prod_image_url').value||null,
+    is_featured:document.getElementById('prod_featured').checked,
+    is_available:document.getElementById('prod_available').checked
+  };
+  const { error } = id ? await sb.from('products').update(data).eq('id',id) : await sb.from('products').insert(data);
+  if(error){showToast('Error: '+error.message,'error');return}
+  showToast(id?'Product update ho gaya!':'Product add ho gaya!','success');
+  closeModal('productModal');
+  await loadProducts();
+}
+
+// ── GALLERY ──
+async function loadGallery() {
+  const { data } = await sb.from('gallery').select('*').order('created_at',{ascending:false});
+  const grid = document.getElementById('adminGalleryGrid');
+  document.getElementById('statGallery').textContent = data?.length||0;
+  if(!data||!data.length){grid.innerHTML='<div class="empty-state"><div class="e-icon">🖼️</div><p>Koi photo nahi hai abhi</p></div>';return}
+  grid.innerHTML = data.map(g=>`
+    <div class="admin-gallery-item">
+      <img src="${g.image_url}" alt="${g.caption||''}"/>
+      <div class="del-overlay">
+        <button class="btn btn-red btn-sm" onclick="confirmDelete('gallery','${g.id}','photo')">🗑️ Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+function openGalleryUpload() {
+  document.getElementById('gal_image_url').value='';
+  document.getElementById('gal_caption').value='';
+  document.getElementById('galImgPreview').style.display='none';
+  openModal('galleryModal');
+}
+
+async function saveGalleryPhoto() {
+  const url = document.getElementById('gal_image_url').value;
+  if(!url){showToast('Pehle photo upload karo!','error');return}
+  const { error } = await sb.from('gallery').insert({image_url:url, caption:document.getElementById('gal_caption').value.trim()||null});
+  if(error){showToast('Error: '+error.message,'error');return}
+  showToast('Photo add ho gayi!','success');
+  closeModal('galleryModal');
+  loadGallery();
+}
+
+// ── BANNERS ──
+async function loadBanners() {
+  const { data } = await sb.from('banners').select('*').order('created_at',{ascending:false});
+  const tbody = document.getElementById('bannerTableBody');
+  if(!data||!data.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted)">Koi banner nahi hai</td></tr>';return}
+  tbody.innerHTML = data.map(b=>{
+    const img = b.image_url ? `<div class="thumb"><img src="${b.image_url}" alt="${b.title}"/></div>` : `<div class="thumb">🎨</div>`;
+    const status = b.is_active ? '<span class="badge badge-green">Active</span>' : '<span class="badge badge-red">Inactive</span>';
+    return `<tr>
+      <td>${img}</td>
+      <td><strong>${b.title||'-'}</strong></td>
+      <td style="color:var(--muted)">${b.subtitle||'-'}</td>
+      <td>${status}</td>
+      <td style="display:flex;gap:.5rem;padding-top:.9rem">
+        <button class="btn btn-ghost btn-sm" onclick="editBanner('${b.id}')">✏️</button>
+        <button class="btn btn-red btn-sm" onclick="confirmDelete('banner','${b.id}','banner')">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function openBannerModal(banner=null) {
+  document.getElementById('banner_id').value = banner?.id||'';
+  document.getElementById('banner_title').value = banner?.title||'';
+  document.getElementById('banner_subtitle').value = banner?.subtitle||'';
+  document.getElementById('banner_image_url').value = banner?.image_url||'';
+  document.getElementById('banner_active').checked = banner?.is_active!==false;
+  const prev = document.getElementById('bannerImgPreview');
+  if(banner?.image_url){prev.src=banner.image_url;prev.style.display='block'}else{prev.style.display='none'}
+  document.getElementById('bannerModalTitle').textContent = banner ? 'Banner Edit Karo' : 'Naya Banner';
+  openModal('bannerModal');
+}
+
+async function editBanner(id) {
+  const { data } = await sb.from('banners').select('*').eq('id',id).single();
+  if(data) openBannerModal(data);
+}
+
+async function saveBanner() {
+  const id = document.getElementById('banner_id').value;
+  const data = {
+    title:document.getElementById('banner_title').value.trim(),
+    subtitle:document.getElementById('banner_subtitle').value.trim(),
+    image_url:document.getElementById('banner_image_url').value||null,
+    is_active:document.getElementById('banner_active').checked
+  };
+  const { error } = id ? await sb.from('banners').update(data).eq('id',id) : await sb.from('banners').insert(data);
+  if(error){showToast('Error: '+error.message,'error');return}
+  showToast('Banner save ho gaya!','success');
+  closeModal('bannerModal');
+  loadBanners();
+}
+
+// ── SETTINGS ──
+async function loadSettings() {
+  const { data } = await sb.from('settings').select('*');
+  if(!data) return;
+  const s = {};
+  data.forEach(row => s[row.key]=row.value);
+  document.getElementById('set_shop_name').value = s.shop_name||'';
+  document.getElementById('set_shop_phone').value = s.shop_phone||'';
+  document.getElementById('set_shop_address').value = s.shop_address||'';
+  document.getElementById('set_whatsapp_number').value = s.whatsapp_number||'';
+}
+
+async function saveSettings() {
+  const newPass = document.getElementById('set_new_pass').value;
+  const confirmPass = document.getElementById('set_confirm_pass').value;
+  if(newPass && newPass !== confirmPass){showToast('Passwords match nahi kar rahe!','error');return}
+  const updates = [
+    {key:'shop_name', value:document.getElementById('set_shop_name').value},
+    {key:'shop_phone', value:document.getElementById('set_shop_phone').value},
+    {key:'shop_address', value:document.getElementById('set_shop_address').value},
+    {key:'whatsapp_number', value:document.getElementById('set_whatsapp_number').value},
+  ];
+  if(newPass) updates.push({key:'admin_password', value:newPass});
+  for(const u of updates) {
+    await sb.from('settings').upsert({key:u.key, value:u.value}, {onConflict:'key'});
+  }
+  showToast('Settings save ho gayi!','success');
+  document.getElementById('set_new_pass').value='';
+  document.getElementById('set_confirm_pass').value='';
+}
+
+// ── IMAGE UPLOAD ──
+async function previewAndUploadImage(inputId, previewId, urlFieldId, progressId) {
+  const file = document.getElementById(inputId).files[0];
+  if(!file) return;
+  if(file.size > 5*1024*1024){showToast('File 5MB se badi hai!','error');return}
+  const reader = new FileReader();
+  reader.onload = e => {
+    const prev = document.getElementById(previewId);
+    prev.src = e.target.result;
+    prev.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+  const progressWrap = document.getElementById(progressId);
+  const barId = progressId.replace('Progress','ProgressBar');
+  progressWrap.style.display = 'block';
+  document.getElementById(barId).style.width = '30%';
+  const ext = file.name.split('.').pop();
+  const fileName = `${Date.now()}-${Math.random().toString(36).substr(2,6)}.${ext}`;
+  document.getElementById(barId).style.width = '60%';
+  const { data, error } = await sb.storage.from('images').upload(fileName, file, {contentType:file.type, upsert:true});
+  if(error){showToast('Upload failed: '+error.message,'error');progressWrap.style.display='none';return}
+  document.getElementById(barId).style.width = '100%';
+  const { data: urlData } = sb.storage.from('images').getPublicUrl(fileName);
+  document.getElementById(urlFieldId).value = urlData.publicUrl;
+  showToast('Photo upload ho gayi!','success');
+  setTimeout(()=>{progressWrap.style.display='none';document.getElementById(barId).style.width='0%'},800);
+}
+
+// ── DELETE ──
+function confirmDelete(type, id, name) {
+  document.getElementById('confirmMsg').textContent = `"${name}" delete karna chahte hain?`;
+  document.getElementById('confirmOkBtn').onclick = async () => {
+    closeModal('confirmModal');
+    const tableMap = {product:'products',category:'categories',gallery:'gallery',banner:'banners'};
+    const { error } = await sb.from(tableMap[type]).delete().eq('id',id);
+    if(error){showToast('Delete failed!','error');return}
+    showToast('Delete ho gaya!','success');
+    if(type==='product') await loadProducts();
+    else if(type==='category'){await loadCategories();await loadProducts();}
+    else if(type==='gallery') await loadGallery();
+    else if(type==='banner') await loadBanners();
+    updateStats();
+  };
+  openModal('confirmModal');
+}
+
+// ── MODAL HELPERS ──
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)closeModal(o.id)}));
+
+// ── TOAST ──
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+document.getElementById('loginPass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+</script>
+</body>
+</html>

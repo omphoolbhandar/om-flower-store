@@ -38,7 +38,7 @@ function renderProduct(p) {
   const thumbsEl = document.getElementById('galleryThumbs');
 
   function setMainImage(url) {
-    mainEl.innerHTML = url ? `<img src="${url}" alt="${escapeHtml(p.name)}">` : noImageSvg();
+    mainEl.innerHTML = url ? `<img src="${url}" alt="${escapeHtml(p.name)}">` : pickFlowerEmoji(p.id);
   }
   setMainImage(images[0]);
 
@@ -63,7 +63,7 @@ function renderProduct(p) {
   const inStock = p.inStock !== false;
   const badge = document.getElementById('pStockBadge');
   badge.className = `stock-badge ${inStock ? 'in' : 'out'}`;
-  badge.innerHTML = `${bloomDotSvg()} ${inStock ? 'In stock' : 'Out of stock'}`;
+  badge.textContent = inStock ? '● In stock' : '● Out of stock';
 
   const occWrap = document.getElementById('pOccasions');
   occWrap.innerHTML = (p.occasions || []).map(tag => `<span class="chip selected">${escapeHtml(tag)}</span>`).join('');

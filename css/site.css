@@ -111,7 +111,7 @@ input, select, textarea { font-family: var(--font-body); font-size: 0.95rem; }
   min-height: auto; /* Faltu ki height hata di */
   display: flex; align-items: center; justify-content: center;
   text-align: center; 
-  padding: 2rem 2vw 2rem; /* Upar, niche aur side ki space kam kar di */
+  padding: 1rem 2vw 2rem; /* Upar, niche aur side ki space kam kar di */
   z-index: 1;
 }
 
@@ -384,7 +384,7 @@ input, select, textarea { font-family: var(--font-body); font-size: 0.95rem; }
   max-width: 900px; /* Desktop par banner ka size control karne ke liye */
   height: auto;
   border-radius: 12px; /* Corners ko thoda round karne ke liye */
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   box-shadow: 0 8px 24px rgba(0,0,0,0.1); /* Halka sa shadow effect */
 }
 

@@ -107,9 +107,18 @@ input, select, textarea { font-family: var(--font-body); font-size: 0.95rem; }
 
 /* ---------- Hero (homepage) ---------- */
 .hero {
-  position: relative; min-height: 86vh;
+  position: relative; 
+  min-height: auto; /* Faltu ki height hata di */
   display: flex; align-items: center; justify-content: center;
-  text-align: center; padding: 5rem 5vw 3rem; z-index: 1;
+  text-align: center; 
+  padding: 2rem 2vw 2rem; /* Upar, niche aur side ki space kam kar di */
+  z-index: 1;
+}
+
+@media (max-width: 640px) {
+  .hero {
+    padding: 1.5rem 1rem 1.5rem; /* Mobile mein side aur upar ki jagah aur bhi tight kar di */
+  }
 }
 .hero-eyebrow { font-family: var(--font-script); font-size: 1.35rem; color: var(--rose); margin-bottom: 0.8rem; }
 .hero-title {

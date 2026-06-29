@@ -111,7 +111,7 @@ input, select, textarea { font-family: var(--font-body); font-size: 0.95rem; }
   min-height: auto; /* Faltu ki height hata di */
   display: flex; align-items: center; justify-content: center;
   text-align: center; 
-  padding: 1rem 2vw 2rem; /* Upar, niche aur side ki space kam kar di */
+  padding: 0 0 3rem 0; /* Upar, niche aur side ki space kam kar di */
   z-index: 1;
 }
 
@@ -381,8 +381,9 @@ input, select, textarea { font-family: var(--font-body); font-size: 0.95rem; }
 
 .hero-banner-img {
   width: 100%;
-  max-width: 900px; /* Desktop par banner ka size control karne ke liye */
-  height: auto;
+  max-width: 100%; /* Desktop par banner ka size control karne ke liye */
+  height: 500px;
+  object-fit: cover;
   border-radius: 12px; /* Corners ko thoda round karne ke liye */
   margin-bottom: 1rem;
   box-shadow: 0 8px 24px rgba(0,0,0,0.1); /* Halka sa shadow effect */
@@ -390,7 +391,7 @@ input, select, textarea { font-family: var(--font-body); font-size: 0.95rem; }
 
 @media (max-width: 640px) {
   .hero-banner-img {
-    max-width: 100%; /* Mobile screen par pura fit baithega */
+    max-width: 250px; /* Mobile screen par pura fit baithega */
     border-radius: 8px;
   }
 }

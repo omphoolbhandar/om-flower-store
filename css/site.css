@@ -369,5 +369,21 @@ input, select, textarea { font-family: var(--font-body); font-size: 0.95rem; }
   grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center;
   font-size: 0.76rem; color: rgba(0,0,0,0.3); flex-wrap: wrap; gap: 0.5rem;
 }
+
+.hero-banner-img {
+  width: 100%;
+  max-width: 900px; /* Desktop par banner ka size control karne ke liye */
+  height: auto;
+  border-radius: 12px; /* Corners ko thoda round karne ke liye */
+  margin-bottom: 1.5rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1); /* Halka sa shadow effect */
+}
+
+@media (max-width: 640px) {
+  .hero-banner-img {
+    max-width: 100%; /* Mobile screen par pura fit baithega */
+    border-radius: 8px;
+  }
+}
 @media (max-width: 760px) { .site-footer { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 480px) { .site-footer { grid-template-columns: 1fr; } }

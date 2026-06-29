@@ -21,11 +21,13 @@ function renderCartPage() {
 
   listEl.innerHTML = cart.map((item) => `
     <div class="cart-row" data-id="${item.id}">
-      ${item.imageUrl ? `<img src="${item.imageUrl}" alt="">` : `<div style="color:var(--line)">${noImageSvg()}</div>`}
+      ${item.imageUrl
+        ? `<img src="${item.imageUrl}" alt="">`
+        : `<div style="font-size:1.8rem; display:flex; align-items:center; justify-content:center;">${pickFlowerEmoji(item.id)}</div>`}
       <div>
         <div class="name">${escapeHtml(item.name)}</div>
         <div class="unit-price">₹${item.price.toLocaleString('en-IN')} each</div>
-        <div class="qty-stepper" style="margin-top:0.4rem">
+        <div class="qty-stepper" style="margin-top:0.5rem">
           <button type="button" class="qty-minus">−</button>
           <span>${item.qty}</span>
           <button type="button" class="qty-plus">+</button>

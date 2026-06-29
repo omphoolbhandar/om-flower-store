@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Om Flower Store – Khushboo Har Pal</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&family=Dancing+Script:wght@600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1A1A2E;--blush:#E8C4D8;--bark:#7A5C3E;
+  --ivory:#F5EDD6;--rose:#C45C8A;--deep:#0F0F1E;
+  --glass:rgba(255,255,255,0.06);--green:#25D366;
+}
+html{scroll-behavior:smooth}
+body{background:var(--navy);color:var(--ivory);font-family:'Inter',sans-serif;overflow-x:hidden}
+#petals{position:fixed;inset:0;pointer-events:none;z-index:0}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 5vw;backdrop-filter:blur(16px);background:rgba(15,15,30,0.85);border-bottom:1px solid rgba(232,196,216,0.12)}
+.nav-logo{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--blush);letter-spacing:.04em;text-decoration:none}
+.nav-logo span{font-family:'Dancing Script',cursive;color:var(--rose);font-size:1.7rem}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{color:var(--ivory);opacity:.7;text-decoration:none;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;transition:opacity .2s,color .2s}
+.nav-links a:hover{opacity:1;color:var(--blush)}
+.nav-cta{background:var(--rose);color:#fff;padding:.5rem 1.3rem;border-radius:50px;font-size:.82rem;font-weight:500;text-decoration:none;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 18px rgba(196,92,138,.35)}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(196,92,138,.5)}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+.hamburger span{display:block;width:24px;height:2px;background:var(--ivory);border-radius:2px;transition:.3s}
+.mobile-menu{display:none;position:fixed;top:60px;left:0;right:0;background:rgba(15,15,30,.97);padding:1.5rem 5vw;z-index:99;border-bottom:1px solid rgba(232,196,216,.12)}
+.mobile-menu.open{display:block}
+.mobile-menu a{display:block;color:var(--ivory);text-decoration:none;padding:.7rem 0;border-bottom:1px solid rgba(232,196,216,.08);font-size:.95rem}
+
+/* HERO */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:7rem 5vw 4rem;z-index:1}
+.hero-eyebrow{font-family:'Dancing Script',cursive;font-size:1.4rem;color:var(--rose);margin-bottom:1rem;opacity:0;animation:fadeUp .8s .2s forwards}
+.hero-title{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,7vw,5.5rem);line-height:1.08;font-weight:700;color:var(--ivory);opacity:0;animation:fadeUp .9s .4s forwards}
+.hero-title em{color:var(--blush);font-style:italic}
+.hero-sub{margin-top:1.2rem;font-size:clamp(.95rem,2vw,1.1rem);opacity:0;color:rgba(245,237,214,.65);line-height:1.65;max-width:500px;margin-inline:auto;animation:fadeUp .9s .6s forwards}
+.hero-btns{margin-top:2rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;opacity:0;animation:fadeUp .9s .8s forwards}
+.btn-primary{background:linear-gradient(135deg,var(--rose),#a03470);color:#fff;padding:.8rem 2rem;border-radius:50px;font-size:.95rem;font-weight:500;text-decoration:none;transition:transform .2s,box-shadow .2s;box-shadow:0 6px 24px rgba(196,92,138,.4)}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(196,92,138,.55)}
+.btn-outline{border:1.5px solid rgba(232,196,216,.5);color:var(--blush);padding:.8rem 2rem;border-radius:50px;font-size:.95rem;text-decoration:none;transition:background .25s}
+.btn-outline:hover{background:rgba(232,196,216,.1)}
+.hero-scroll{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.4rem;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(245,237,214,.35);animation:bob 2s ease-in-out infinite}
+.hero-scroll::after{content:'';width:1px;height:40px;background:linear-gradient(to bottom,rgba(232,196,216,.5),transparent)}
+
+/* MARQUEE */
+.marquee-wrap{position:relative;z-index:1;background:var(--rose);overflow:hidden;padding:.65rem 0}
+.marquee{display:flex;gap:3rem;width:max-content;animation:marquee 20s linear infinite}
+.marquee-item{white-space:nowrap;font-size:.8rem;font-weight:500;color:#fff;letter-spacing:.12em;text-transform:uppercase}
+.marquee-item::before{content:'✿  '}
+
+/* SECTIONS */
+section{position:relative;z-index:1;padding:5rem 5vw}
+.section-label{font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--rose);margin-bottom:.6rem}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;line-height:1.15;color:var(--ivory);margin-bottom:.8rem}
+.section-title em{color:var(--blush);font-style:italic}
+
+/* CATEGORIES */
+.categories{background:var(--deep)}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;margin-top:2.5rem}
+.cat-card{background:var(--glass);border:1px solid rgba(232,196,216,.12);border-radius:16px;padding:1.5rem 1rem;text-align:center;cursor:pointer;transition:transform .25s,border-color .25s,box-shadow .25s}
+.cat-card:hover{transform:translateY(-5px);border-color:rgba(232,196,216,.4);box-shadow:0 14px 36px rgba(196,92,138,.18)}
+.cat-card.active{border-color:var(--rose);background:rgba(196,92,138,.12)}
+.cat-icon{font-size:2.2rem;margin-bottom:.7rem}
+.cat-name{font-family:'Playfair Display',serif;font-size:1rem;color:var(--ivory);margin-bottom:.2rem}
+.cat-count{font-size:.75rem;color:rgba(245,237,214,.45)}
+
+/* PRODUCTS */
+.products-section{background:var(--navy)}
+.products-controls{display:flex;gap:1rem;margin-top:1.5rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.search-box{background:var(--glass);border:1px solid rgba(232,196,216,.2);border-radius:50px;padding:.55rem 1.2rem;color:var(--ivory);font-size:.9rem;outline:none;width:280px;transition:border-color .2s}
+.search-box::placeholder{color:rgba(245,237,214,.4)}
+.search-box:focus{border-color:rgba(232,196,216,.5)}
+.filter-tabs{display:flex;gap:.5rem;flex-wrap:wrap}
+.filter-tab{background:var(--glass);border:1px solid rgba(232,196,216,.15);color:rgba(245,237,214,.65);padding:.4rem .9rem;border-radius:50px;font-size:.78rem;cursor:pointer;transition:.2s;letter-spacing:.05em}
+.filter-tab:hover,.filter-tab.active{background:rgba(196,92,138,.2);border-color:var(--rose);color:var(--ivory)}
+.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem;margin-top:2rem}
+.product-card{background:var(--glass);border:1px solid rgba(232,196,216,.1);border-radius:18px;overflow:hidden;transition:transform .3s,box-shadow .3s}
+.product-card:hover{transform:translateY(-7px);box-shadow:0 18px 45px rgba(0,0,0,.4)}
+.product-img{height:200px;overflow:hidden;position:relative;background:linear-gradient(135deg,rgba(196,92,138,.15),rgba(122,92,62,.2))}
+.product-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
+.product-card:hover .product-img img{transform:scale(1.06)}
+.product-img-placeholder{height:100%;display:flex;align-items:center;justify-content:center;font-size:4rem}
+.product-badge{position:absolute;top:.6rem;left:.6rem;background:var(--rose);color:#fff;font-size:.65rem;padding:.2rem .6rem;border-radius:50px;letter-spacing:.08em;text-transform:uppercase}
+.product-info{padding:1.2rem}
+.product-tag{display:inline-block;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--rose);background:rgba(196,92,138,.15);padding:.15rem .6rem;border-radius:50px;margin-bottom:.5rem}
+.product-name{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--ivory);margin-bottom:.25rem}
+.product-desc{font-size:.8rem;color:rgba(245,237,214,.5);line-height:1.5;margin-bottom:.9rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.product-footer{display:flex;align-items:center;justify-content:space-between}
+.product-price{font-size:1.1rem;font-weight:600;color:var(--blush)}
+.wa-btn{background:var(--green);color:#fff;border:none;cursor:pointer;padding:.45rem .9rem;border-radius:50px;font-size:.78rem;font-weight:500;display:flex;align-items:center;gap:.4rem;transition:transform .2s,box-shadow .2s;box-shadow:0 3px 12px rgba(37,211,102,.35);text-decoration:none}
+.wa-btn:hover{transform:scale(1.06);box-shadow:0 6px 20px rgba(37,211,102,.5)}
+.no-products{text-align:center;padding:4rem 1rem;color:rgba(245,237,214,.4);font-size:1rem}
+.no-products .icon{font-size:3rem;margin-bottom:1rem}
+
+/* GALLERY */
+.gallery-section{background:var(--deep)}
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-top:2.5rem}
+.gallery-item{border-radius:14px;overflow:hidden;aspect-ratio:1;cursor:pointer;transition:transform .3s}
+.gallery-item:hover{transform:scale(1.03)}
+.gallery-item img{width:100%;height:100%;object-fit:cover}
+
+/* ABOUT */
+.about{background:var(--navy);display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.about-visual{position:relative;height:380px;display:flex;align-items:center;justify-content:center}
+.about-circle{width:280px;height:280px;border-radius:50%;background:radial-gradient(circle at 35% 35%,rgba(196,92,138,.3),rgba(122,92,62,.2));border:1px solid rgba(232,196,216,.2);display:flex;align-items:center;justify-content:center;font-size:8rem}
+.about-ring{position:absolute;width:320px;height:320px;border-radius:50%;border:1px dashed rgba(232,196,216,.15);animation:spinRing 25s linear infinite}
+.stat-row{display:flex;gap:2rem;margin-top:2rem;flex-wrap:wrap}
+.stat-num{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--blush)}
+.stat-label{font-size:.75rem;color:rgba(245,237,214,.45);letter-spacing:.08em}
+
+/* CONTACT */
+.contact{background:var(--deep)}
+.contact-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.2rem;margin-top:2.5rem}
+.contact-card{background:var(--glass);border:1px solid rgba(232,196,216,.1);border-radius:16px;padding:1.5rem;text-align:center}
+.contact-icon{font-size:2rem;margin-bottom:.7rem}
+.contact-label{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--rose);margin-bottom:.3rem}
+.contact-val{font-size:.95rem;color:var(--ivory)}
+.contact-val a{color:var(--blush);text-decoration:none}
+
+/* CTA BAND */
+.cta-band{background:linear-gradient(135deg,#3a1028,var(--navy));border-top:1px solid rgba(232,196,216,.1);border-bottom:1px solid rgba(232,196,216,.1);text-align:center;padding:4.5rem 5vw}
+.cta-band .section-title{margin-bottom:.5rem}
+.cta-band p{color:rgba(245,237,214,.55);margin-bottom:1.8rem}
+
+/* FOOTER */
+footer{background:var(--deep);border-top:1px solid rgba(232,196,216,.08);padding:3rem 5vw 1.5rem;position:relative;z-index:1}
+.footer-inner{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:2.5rem}
+.footer-brand p{font-size:.82rem;color:rgba(245,237,214,.45);line-height:1.65;max-width:200px;margin-top:.7rem}
+.footer-col h4{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--rose);margin-bottom:.9rem}
+.footer-col ul{list-style:none}
+.footer-col ul li{margin-bottom:.5rem}
+.footer-col ul li a{font-size:.83rem;color:rgba(245,237,214,.5);text-decoration:none;transition:color .2s}
+.footer-col ul li a:hover{color:var(--blush)}
+.footer-bottom{margin-top:2rem;padding-top:1.2rem;border-top:1px solid rgba(232,196,216,.07);display:flex;justify-content:space-between;align-items:center;font-size:.75rem;color:rgba(245,237,214,.3);flex-wrap:wrap;gap:.5rem}
+
+/* LIGHTBOX */
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:999;align-items:center;justify-content:center}
+.lightbox.open{display:flex}
+.lightbox img{max-width:90vw;max-height:90vh;border-radius:10px}
+.lightbox-close{position:absolute;top:1.2rem;right:1.5rem;color:#fff;font-size:2rem;cursor:pointer;background:none;border:none}
+
+/* LOADING */
+.loading{display:flex;align-items:center;justify-content:center;padding:3rem;gap:.8rem;color:rgba(245,237,214,.4)}
+.spinner{width:24px;height:24px;border:2px solid rgba(232,196,216,.2);border-top-color:var(--rose);border-radius:50%;animation:spin .8s linear infinite}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--rose);color:#fff;padding:.7rem 1.5rem;border-radius:50px;font-size:.88rem;z-index:9999;transition:transform .3s;box-shadow:0 4px 20px rgba(196,92,138,.4)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(6px)}}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes spinRing{to{transform:rotate(360deg)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .about{grid-template-columns:1fr}
+  .about-visual{height:240px}
+  .footer-inner{grid-template-columns:1fr 1fr}
+}
+@media(max-width:600px){
+  .nav-links,.nav-cta{display:none}
+  .hamburger{display:flex}
+  .footer-inner{grid-template-columns:1fr}
+  .search-box{width:100%}
+  .products-controls{flex-direction:column;align-items:flex-start}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<canvas id="petals"></canvas>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo"><span>ॐ</span> Om Flowers</a>
+  <ul class="nav-links">
+    <li><a href="#categories">Categories</a></li>
+    <li><a href="#products">Products</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="#products" class="nav-cta">Order Karein</a>
+  <div class="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#categories" onclick="toggleMenu()">Categories</a>
+  <a href="#products" onclick="toggleMenu()">Products</a>
+  <a href="#gallery" onclick="toggleMenu()">Gallery</a>
+  <a href="#about" onclick="toggleMenu()">About</a>
+  <a href="#contact" onclick="toggleMenu()">Contact</a>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div>
+    <p class="hero-eyebrow">Phoolon Ki Duniya Mein Aapka Swagat Hai 🌸</p>
+    <h1 class="hero-title">Har Khushi Ke Liye<br><em>Sundar Phool</em></h1>
+    <p class="hero-sub">Taazgi, rang, aur khushboo liye hum pohonchate hain aapke darwaze tak. Shaadi ho, birthday ho ya sirf pyaar — Om Flowers har pal ko khaas banata hai.</p>
+    <div class="hero-btns">
+      <a href="#products" class="btn-primary">Collection Dekhein</a>
+      <a href="#about" class="btn-outline">Hamare Baare Mein</a>
+    </div>
+  </div>
+  <div class="hero-scroll">Scroll</div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap" aria-hidden="true">
+  <div class="marquee">
+    <span class="marquee-item">Taaze Phool</span>
+    <span class="marquee-item">Bouquets</span>
+    <span class="marquee-item">Wedding Decoration</span>
+    <span class="marquee-item">Birthday Special</span>
+    <span class="marquee-item">Home Delivery</span>
+    <span class="marquee-item">Seasonal Flowers</span>
+    <span class="marquee-item">Pooja Samagri</span>
+    <span class="marquee-item">Corporate Gifts</span>
+    <span class="marquee-item">Taaze Phool</span>
+    <span class="marquee-item">Bouquets</span>
+    <span class="marquee-item">Wedding Decoration</span>
+    <span class="marquee-item">Birthday Special</span>
+    <span class="marquee-item">Home Delivery</span>
+    <span class="marquee-item">Seasonal Flowers</span>
+    <span class="marquee-item">Pooja Samagri</span>
+    <span class="marquee-item">Corporate Gifts</span>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<section class="categories" id="categories">
+  <p class="section-label">Browse By Category</p>
+  <h2 class="section-title">Sahi Phool <em>Sahi Mauke</em> Ke Liye</h2>
+  <div class="cat-grid" id="catGrid">
+    <div class="loading"><div class="spinner"></div> Load ho raha hai...</div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section class="products-section" id="products">
+  <p class="section-label">Hamare Products</p>
+  <h2 class="section-title">Sundar <em>Phoolon</em> Ka Collection</h2>
+  <div class="products-controls">
+    <input class="search-box" type="text" id="searchBox" placeholder="🔍 Phool dhundho..."/>
+    <div class="filter-tabs" id="filterTabs">
+      <span class="filter-tab active" data-cat="all">Sab</span>
+    </div>
+  </div>
+  <div class="products-grid" id="productsGrid">
+    <div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Products load ho rahe hain...</div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="gallery-section" id="gallery">
+  <p class="section-label">Hamari Gallery</p>
+  <h2 class="section-title">Kaam Ki <em>Jhalkiyaan</em></h2>
+  <div class="gallery-grid" id="galleryGrid">
+    <div class="loading"><div class="spinner"></div></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-visual">
+    <div class="about-circle">🌺</div>
+    <div class="about-ring"></div>
+  </div>
+  <div>
+    <p class="section-label">Hamare Baare Mein</p>
+    <h2 class="section-title">Phoolon Se <em>Jodi Dil Ki</em> Baat</h2>
+    <p style="color:rgba(245,237,214,.6);line-height:1.8;margin-bottom:.8rem;font-size:.93rem">
+      Om Flower Store — jahan har phool ek kahani sunata hai. Hum apne shahar ke logon ke liye
+      taaze, sundar aur sugandhit phool laate aa rahe hain.
+    </p>
+    <p style="color:rgba(245,237,214,.6);line-height:1.8;font-size:.93rem">
+      Shaadi ho ya gham, birthday ho ya tyohaar — hum har jazbaat ke liye sahi phool chunte hain.
+      Seedha kisan se lekar aapke darwaze tak — freshness guaranteed!
+    </p>
+    <div class="stat-row">
+      <div class="stat"><div class="stat-num">15+</div><div class="stat-label">Saal Ka Anubhav</div></div>
+      <div class="stat"><div class="stat-num">10k+</div><div class="stat-label">Khush Customers</div></div>
+      <div class="stat"><div class="stat-num">200+</div><div class="stat-label">Flower Varieties</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <p class="section-label">Humse Milein</p>
+  <h2 class="section-title">Sampark <em>Karein</em></h2>
+  <div class="contact-grid" id="contactGrid">
+    <div class="contact-card"><div class="contact-icon">📞</div><div class="contact-label">Phone</div><div class="contact-val" id="shopPhone">Loading...</div></div>
+    <div class="contact-card"><div class="contact-icon">💬</div><div class="contact-label">WhatsApp</div><div class="contact-val"><a id="shopWA" href="#">Order Karein</a></div></div>
+    <div class="contact-card"><div class="contact-icon">📍</div><div class="contact-label">Address</div><div class="contact-val" id="shopAddr">Loading...</div></div>
+    <div class="contact-card"><div class="contact-icon">⏰</div><div class="contact-label">Timing</div><div class="contact-val">7 AM – 9 PM (Roz)</div></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-band">
+  <p class="section-label">Abhi Order Karein</p>
+  <h2 class="section-title">Apne <em>Khaas Pal</em> Ko Aur Khaas Banayein</h2>
+  <p>Ghar baithe order karein, hum pahoncha denge aapke dil ke saath phool.</p>
+  <a id="ctaWA" href="#" class="btn-primary">💬 WhatsApp Pe Order Karein</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="#" class="nav-logo"><span>ॐ</span> Om Flowers</a>
+      <p>Khushboo, rang, aur pyaar le ke aate hain hum — har baar, har dafa.</p>
+    </div>
+    <div class="footer-col"><h4>Links</h4><ul>
+      <li><a href="#home">Home</a></li>
+      <li><a href="#categories">Categories</a></li>
+      <li><a href="#products">Products</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#about">About</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Products</h4><ul id="footerCats"></ul></div>
+    <div class="footer-col"><h4>Contact</h4><ul>
+      <li><a id="footerPhone" href="#">📞 Loading...</a></li>
+      <li><a id="footerWA" href="#">💬 WhatsApp</a></li>
+      <li><a id="footerAddr" href="#">📍 Loading...</a></li>
+      <li><a href="#">⏰ 7AM – 9PM</a></li>
+    </ul></div>
+  </div>
+  <div class="footer-bottom">
+    <span id="footerShopName">© 2026 Om Flower Store</span>
+    <span>Made with 🌸 for you</span>
+  </div>
+</footer>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close">✕</button>
+  <img id="lightboxImg" src="" alt=""/>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ──
+const SUPABASE_URL = 'https://jxbqnkrgcunzadvjiwvg.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp4YnFua3JnY3VuemFkdmppd3ZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2OTcyMTIsImV4cCI6MjA5ODI3MzIxMn0.vU4I6WKdsJLgH4afszIYmfLptmm1RMlJ4RApDDZaV-M';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let allProducts = [], allCategories = [], settings = {}, activeFilter = 'all';
+
+// ── INIT ──
+async function init() {
+  await loadSettings();
+  await loadCategories();
+  await loadProducts();
+  await loadGallery();
+}
+
+// ── SETTINGS ──
+async function loadSettings() {
+  try {
+    const { data } = await sb.from('settings').select('*');
+    if (data) data.forEach(s => settings[s.key] = s.value);
+    const phone = settings.shop_phone || '99990-00000';
+    const waNum = settings.whatsapp_number || '919999000000';
+    const addr = settings.shop_address || 'Main Bazar, Aapka Shahar';
+    const name = settings.shop_name || 'Om Flower Store';
+    document.getElementById('shopPhone').textContent = phone;
+    document.getElementById('shopAddr').textContent = addr;
+    document.getElementById('shopWA').href = `https://wa.me/${waNum}`;
+    document.getElementById('shopWA').textContent = 'Chat Karein';
+    document.getElementById('ctaWA').href = `https://wa.me/${waNum}?text=Namaste! Mujhe flowers order karne hain.`;
+    document.getElementById('footerPhone').textContent = '📞 ' + phone;
+    document.getElementById('footerPhone').href = 'tel:' + phone.replace(/\D/g,'');
+    document.getElementById('footerWA').href = `https://wa.me/${waNum}`;
+    document.getElementById('footerAddr').textContent = '📍 ' + addr;
+    document.getElementById('footerShopName').textContent = '© 2026 ' + name;
+    document.title = name + ' – Khushboo Har Pal';
+  } catch(e) { console.log('Settings error',e); }
+}
+
+// ── CATEGORIES ──
+async function loadCategories() {
+  const { data } = await sb.from('categories').select('*').order('name');
+  allCategories = data || [];
+  renderCategories();
+  renderFilterTabs();
+}
+
+function renderCategories() {
+  const grid = document.getElementById('catGrid');
+  if (!allCategories.length) {
+    grid.innerHTML = '<p style="color:rgba(245,237,214,.4);grid-column:1/-1;text-align:center;padding:2rem">Abhi categories add nahi hui hain</p>';
+    return;
+  }
+  const catIcons = ['🌹','💐','🌸','🌼','🌺','🌻','🌷','🏵️','🎊','🎁','🌿','🍀'];
+  grid.innerHTML = allCategories.map((c,i) => {
+    const count = allProducts.filter(p => p.category_id === c.id).length;
+    const imgHtml = c.image_url
+      ? `<img src="${c.image_url}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;margin-bottom:.7rem" alt="${c.name}"/>`
+      : `<div class="cat-icon">${catIcons[i % catIcons.length]}</div>`;
+    return `<div class="cat-card" onclick="filterByCategory('${c.id}','${c.name}')">
+      ${imgHtml}
+      <div class="cat-name">${c.name}</div>
+      <div class="cat-count">${count} products</div>
+    </div>`;
+  }).join('');
+}
+
+function renderFilterTabs() {
+  const tabs = document.getElementById('filterTabs');
+  const catTabs = allCategories.map(c =>
+    `<span class="filter-tab" data-cat="${c.id}" onclick="filterByCat('${c.id}')">${c.name}</span>`
+  ).join('');
+  tabs.innerHTML = `<span class="filter-tab active" data-cat="all" onclick="filterByCat('all')">Sab</span>${catTabs}`;
+  document.getElementById('footerCats').innerHTML = allCategories.slice(0,5).map(c =>
+    `<li><a href="#products" onclick="filterByCat('${c.id}')">${c.name}</a></li>`
+  ).join('');
+}
+
+// ── PRODUCTS ──
+async function loadProducts() {
+  const { data } = await sb.from('products').select('*,categories(name)').eq('is_available', true).order('created_at', {ascending: false});
+  allProducts = data || [];
+  renderCategories();
+  renderProducts(allProducts);
+}
+
+function renderProducts(products) {
+  const grid = document.getElementById('productsGrid');
+  if (!products.length) {
+    grid.innerHTML = `<div class="no-products" style="grid-column:1/-1"><div class="icon">🌸</div><p>Koi product nahi mila</p></div>`;
+    return;
+  }
+  const waNum = settings.whatsapp_number || '919999000000';
+  grid.innerHTML = products.map(p => {
+    const imgHtml = p.image_url
+      ? `<img src="${p.image_url}" alt="${p.name}" loading="lazy"/>`
+      : `<div class="product-img-placeholder">💐</div>`;
+    const badge = p.is_featured ? '<span class="product-badge">Featured</span>' : '';
+    const catName = p.categories?.name || '';
+    const msg = encodeURIComponent(p.whatsapp_msg || `Namaste! Mujhe "${p.name}" order karni hai. Price: ₹${p.price}`);
+    return `<div class="product-card">
+      <div class="product-img">${imgHtml}${badge}</div>
+      <div class="product-info">
+        ${catName ? `<span class="product-tag">${catName}</span>` : ''}
+        <div class="product-name">${p.name}</div>
+        <div class="product-desc">${p.description || 'Sundar aur taaze phool'}</div>
+        <div class="product-footer">
+          <span class="product-price">₹ ${Number(p.price).toLocaleString('en-IN')}</span>
+          <a class="wa-btn" href="https://wa.me/${waNum}?text=${msg}" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Order
+          </a>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterByCat(catId) {
+  activeFilter = catId;
+  document.querySelectorAll('.filter-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.cat === catId);
+  });
+  applyFilters();
+}
+
+function filterByCategory(catId, catName) {
+  document.getElementById('products').scrollIntoView({behavior:'smooth'});
+  filterByCat(catId);
+}
+
+function applyFilters() {
+  const q = document.getElementById('searchBox').value.toLowerCase();
+  let filtered = allProducts;
+  if (activeFilter !== 'all') filtered = filtered.filter(p => p.category_id === activeFilter);
+  if (q) filtered = filtered.filter(p => p.name.toLowerCase().includes(q) || (p.description||'').toLowerCase().includes(q));
+  renderProducts(filtered);
+}
+
+document.getElementById('searchBox').addEventListener('input', applyFilters);
+
+// ── GALLERY ──
+async function loadGallery() {
+  const { data } = await sb.from('gallery').select('*').order('created_at', {ascending: false});
+  const grid = document.getElementById('galleryGrid');
+  if (!data || !data.length) {
+    grid.innerHTML = '<p style="color:rgba(245,237,214,.4);grid-column:1/-1;text-align:center;padding:2rem">Gallery mein abhi koi photo nahi hai</p>';
+    return;
+  }
+  grid.innerHTML = data.map(g => `
+    <div class="gallery-item" onclick="openLightbox('${g.image_url}')">
+      <img src="${g.image_url}" alt="${g.caption||'Gallery'}" loading="lazy"/>
+    </div>`).join('');
+}
+
+// ── LIGHTBOX ──
+function openLightbox(src) {
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+}
+
+// ── MOBILE MENU ──
+function toggleMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── PETALS + FLOWERS ANIMATION ──
+const canvas = document.getElementById('petals');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [];
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resize(); window.addEventListener('resize', resize);
+const COLORS = ['rgba(232,196,216,','rgba(196,92,138,','rgba(245,237,214,'];
+const FLOWERS = ['🌸','🌺','🌹','🌼','💐','🌷','🌻','🏵️'];
+function Petal() {
+  this.type='petal';this.x=Math.random()*W;this.y=Math.random()*-H;this.r=3+Math.random()*5;
+  this.vx=(Math.random()-.5)*.5;this.vy=.4+Math.random()*.7;this.rot=Math.random()*Math.PI*2;
+  this.rotV=(Math.random()-.5)*.025;this.alpha=.15+Math.random()*.35;
+  this.color=COLORS[Math.floor(Math.random()*COLORS.length)];
+}
+Petal.prototype.draw=function(){ctx.save();ctx.translate(this.x,this.y);ctx.rotate(this.rot);ctx.globalAlpha=this.alpha;ctx.beginPath();ctx.ellipse(0,0,this.r,this.r*1.7,0,0,Math.PI*2);ctx.fillStyle=this.color+'1)';ctx.fill();ctx.restore()};
+Petal.prototype.update=function(){this.x+=this.vx;this.y+=this.vy;this.rot+=this.rotV;if(this.y>H+20){this.x=Math.random()*W;this.y=-20}};
+function Flower(){
+  this.type='flower';this.emoji=FLOWERS[Math.floor(Math.random()*FLOWERS.length)];
+  this.x=Math.random()*W;this.y=Math.random()*-H;this.size=14+Math.random()*18;
+  this.vx=(Math.random()-.5)*.4;this.vy=.3+Math.random()*.55;this.rot=Math.random()*Math.PI*2;
+  this.rotV=(Math.random()-.5)*.018;this.alpha=.18+Math.random()*.38;
+}
+Flower.prototype.draw=function(){ctx.save();ctx.translate(this.x,this.y);ctx.rotate(this.rot);ctx.globalAlpha=this.alpha;ctx.font=this.size+'px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(this.emoji,0,0);ctx.restore()};
+Flower.prototype.update=function(){this.x+=this.vx;this.y+=this.vy;this.rot+=this.rotV;if(this.y>H+30){this.x=Math.random()*W;this.y=-30}};
+for(let i=0;i<35;i++){const p=new Petal();p.y=Math.random()*H;particles.push(p)}
+for(let i=0;i<25;i++){const f=new Flower();f.y=Math.random()*H;particles.push(f)}
+function loop(){ctx.clearRect(0,0,W,H);particles.forEach(p=>{p.update();p.draw()});requestAnimationFrame(loop)}
+loop();
+document.addEventListener('mousemove',e=>{const mx=(e.clientX/W-.5)*.4;particles.forEach(p=>{p.vx=mx+(Math.random()-.5)*.3})});
+
+// ── START ──
+init();
+</script>
+</body>
+</html>

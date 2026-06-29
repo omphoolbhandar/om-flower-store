@@ -1,25 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shop · Om Flower Store</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/tokens.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/site.css">
 </head>
 <body>
 
+<canvas id="petals" data-density="light"></canvas>
+
 <header class="site-header">
   <a href="index.html" class="brand">
-    <span class="bloom">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-        <circle cx="12" cy="6" r="4.2"/><circle cx="17.3" cy="9.8" r="4.2"/>
-        <circle cx="15.4" cy="16" r="4.2"/><circle cx="8.6" cy="16" r="4.2"/>
-        <circle cx="6.7" cy="9.8" r="4.2"/><circle cx="12" cy="12" r="2.6" fill="#fffbf2"/>
-      </svg>
-    </span>
+    <span class="om">ॐ</span>
     <span class="name">Om Flower Store</span>
   </a>
   <nav class="site-nav">
@@ -35,11 +30,12 @@
   </a>
 </header>
 
-<section class="section">
-  <div class="section-head">
-    <h2 id="pageTitle">Shop</h2>
-  </div>
+<div class="page-header">
+  <p class="section-label">Hamara Collection</p>
+  <h1 id="pageTitle">Shop</h1>
+</div>
 
+<section class="section">
   <div class="shop-toolbar">
     <input type="search" id="searchInput" placeholder="Search products…">
   </div>
@@ -55,28 +51,36 @@
 </section>
 
 <footer class="site-footer">
-  <div class="brand-row">
-    <span class="bloom">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-        <circle cx="12" cy="6" r="4.2"/><circle cx="17.3" cy="9.8" r="4.2"/>
-        <circle cx="15.4" cy="16" r="4.2"/><circle cx="8.6" cy="16" r="4.2"/>
-        <circle cx="6.7" cy="9.8" r="4.2"/><circle cx="12" cy="12" r="2.6" fill="#1f3a2e"/>
-      </svg>
-    </span>
-    <strong>Om Flower Store</strong>
+  <div class="footer-brand">
+    <div class="brand-row"><span class="om">ॐ</span><strong>Om Flower Store</strong></div>
+    <p>Khushboo, rang, aur pyaar le ke aate hain hum — har baar, har dafa.</p>
   </div>
-  <p>Fresh flowers &amp; bouquets, delivered with love.</p>
-  <a id="footerWhatsapp" class="btn-primary" target="_blank" rel="noopener">Chat on WhatsApp</a>
-  <p class="copyright">© 2026 Om Flower Store</p>
+  <div class="footer-col">
+    <h4>Links</h4>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="shop.html">Shop</a></li>
+      <li><a href="cart.html">Cart</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Connect</h4>
+    <a id="footerWhatsapp" class="btn-primary" target="_blank" rel="noopener">Chat on WhatsApp</a>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Om Flower Store. Sabhi adhikar surakshit.</span>
+    <span>Made with 🌸 for you</span>
+  </div>
 </footer>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="js/firebase-config.js"></script>
 <script src="js/site-config.js"></script>
 <script src="js/cart.js"></script>
 <script src="js/site-helpers.js"></script>
+<script src="js/petals.js"></script>
 <script src="js/shop.js"></script>
 </body>
 </html>

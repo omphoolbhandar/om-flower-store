@@ -119,7 +119,7 @@ section{position:relative;z-index:1;padding:5rem 5vw}
 /* CONTACT */
 .contact{background:var(--deep)}
 .contact-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.2rem;margin-top:2.5rem}
-.contact-card{background:var(--glass);border:1px solid rgba(196,92,138,.1);border-radius:16px;padding:1.5rem;text-align:center}
+.contact-card{background:var(--glass);border:1px solid rgba(196,92,138,.1);border-radius:16px;padding:1.5rem;text-align:center;display:block;text-decoration:none;color:inherit}
 .contact-icon{font-size:2rem;margin-bottom:.7rem}
 .contact-label{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--rose);margin-bottom:.3rem}
 .contact-val{font-size:.95rem;color:var(--ivory)}
@@ -293,8 +293,8 @@ footer{background:var(--deep);border-top:1px solid rgba(196,92,138,.08);padding:
   <p class="section-label">Get in Touch</p>
   <h2 class="section-title">Contact <em>Us</em></h2>
   <div class="contact-grid" id="contactGrid">
-    <div class="contact-card"><div class="contact-icon">📞</div><div class="contact-label">Phone</div><div class="contact-val"><a id="shopPhone" href="#">Loading...</a></div></div>
-    <div class="contact-card"><div class="contact-icon">💬</div><div class="contact-label">WhatsApp</div><div class="contact-val"><a id="shopWA" href="#">Order Karein</a></div></div>
+    <a class="contact-card" id="shopPhoneCard" href="#"><div class="contact-icon">📞</div><div class="contact-label">Phone</div><div class="contact-val" id="shopPhone">Loading...</div></a>
+    <a class="contact-card" id="shopWACard" href="#"><div class="contact-icon">💬</div><div class="contact-label">WhatsApp</div><div class="contact-val" id="shopWA">Loading...</div></a>
     <div class="contact-card"><div class="contact-icon">📍</div><div class="contact-label">Address</div><div class="contact-val" id="shopAddr">Loading...</div></div>
     <div class="contact-card"><div class="contact-icon">⏰</div><div class="contact-label">Timing</div><div class="contact-val">7 AM – 9 PM (Daily)</div></div>
   </div>
@@ -450,10 +450,8 @@ async function loadSettings() {
     const addr = settings.shop_address || 'Main Bazar, Aapka Shahar';
     const name = settings.shop_name || 'Om Flower Store';
     document.getElementById('shopPhone').textContent = phone;
-    document.getElementById('shopPhone').textContent = phone;
-    document.getElementById('shopPhone').href = 'tel:' + phone.replace(/\D/g,'');
-    document.getElementById('shopAddr').textContent = addr;
-    document.getElementById('shopWA').href = `https://wa.me/${waNum}`;
+    document.getElementById('shopPhoneCard').href = 'tel:' + phone.replace(/\D/g,'');
+    document.getElementById('shopWACard').href = `https://wa.me/${waNum}`;
     document.getElementById('shopWA').textContent = 'Chat Now';
     document.getElementById('ctaWA').href = `https://wa.me/${waNum}?text=Hello! Mujhe flowers order karne hain.`;
     document.getElementById('footerPhone').textContent = '📞 ' + phone;

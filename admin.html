@@ -16,7 +16,7 @@
   --red:#e74c3c;--yellow:#f39c12;--blue:#3498db;
   --text:rgba(245,237,214,0.9);--muted:rgba(245,237,214,0.45);
 }
-  [data-theme="light"]{
+[data-theme="light"]{
   --bg:#FAF7F2;--sidebar:#FFFFFF;--card:#FFFFFF;--border:rgba(0,0,0,0.08);
   --rose:#C45C8A;--blush:#A8336B;--ivory:#2A1B2E;--green:#1FAE56;
   --red:#e74c3c;--yellow:#f39c12;--blue:#3498db;
@@ -49,10 +49,12 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-s
 .nav-item:hover{color:var(--ivory);background:rgba(255,255,255,.04)}
 .nav-item.active{color:var(--blush);border-left-color:var(--rose);background:rgba(196,92,138,.08)}
 .nav-item .icon{font-size:1.1rem;width:22px;text-align:center}
+.sidebar-footer{margin-top:auto;padding:1rem 1.4rem;border-top:1px solid var(--border)}
+.logout-btn{background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.3);color:var(--red);padding:.55rem 1rem;border-radius:8px;font-size:.82rem;cursor:pointer;width:100%;transition:.2s}
+.logout-btn:hover{background:rgba(231,76,60,.2)}
 .top-corner-bar{position:fixed;top:1rem;right:1rem;z-index:200;display:flex;gap:.6rem}
 .icon-btn{background:var(--card);border:1px solid var(--border);color:var(--text);width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.15rem;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.18);transition:.2s}
 .icon-btn:hover{transform:translateY(-2px)}
-.icon-btn.logout-btn{color:var(--red);border-color:rgba(231,76,60,.3)}
 
 /* MAIN */
 .main{margin-left:220px;padding:1.5rem;flex:1}
@@ -160,6 +162,15 @@ tr:hover td{background:rgba(255,255,255,.02)}
 .empty-state{text-align:center;padding:3rem 1rem;color:var(--muted)}
 .empty-state .e-icon{font-size:2.5rem;margin-bottom:.8rem}
 
+/* DRAG REORDER */
+.drag-handle{cursor:grab;touch-action:none;color:var(--muted);font-size:1.05rem;user-select:none;text-align:center;display:block;padding:.3rem}
+.drag-handle:active{cursor:grabbing}
+tr.dragging-source{opacity:.35}
+.admin-gallery-item.dragging-source{opacity:.35}
+.drag-ghost{opacity:.95;box-shadow:0 12px 34px rgba(0,0,0,.55);border-radius:10px;background:var(--card)}
+.drag-ghost table{width:100%;border-collapse:collapse}
+.gallery-drag-handle{position:absolute;top:.35rem;left:.35rem;width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.95rem;cursor:grab;touch-action:none;z-index:2}
+
 /* RESPONSIVE */
 @media(max-width:768px){
   /* Sidebar -> bottom tab bar (easier thumb reach than a side rail) */
@@ -241,7 +252,6 @@ tr:hover td{background:rgba(255,255,255,.02)}
 <div id="app">
   <div class="top-corner-bar">
     <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Theme Badlo">🌙</button>
-    <button class="icon-btn logout-btn" onclick="doLogout()" title="Logout">🚪</button>
   </div>
   <div class="layout">
 
@@ -257,7 +267,9 @@ tr:hover td{background:rgba(255,255,255,.02)}
       <div class="nav-item" onclick="showPage('gallery')"><span class="icon">🖼️</span><span>Gallery</span></div>
       <div class="nav-item" onclick="showPage('banners')"><span class="icon">🎨</span><span>Banners</span></div>
       <div class="nav-item" onclick="showPage('settings')"><span class="icon">⚙️</span><span>Settings</span></div>
-      
+      <div class="sidebar-footer">
+        <button class="logout-btn" onclick="doLogout()">🚪 <span>Logout</span></button>
+      </div>
     </aside>
 
     <!-- MAIN -->
@@ -288,7 +300,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
       <!-- PRODUCTS -->
       <div class="page" id="page-products">
         <div class="page-header">
-          <div><div class="page-title">Products</div><div class="page-sub">Sare products manage karo</div></div>
+          <div><div class="page-title">Products</div><div class="page-sub">⠿ ko drag karke order set karo — wahi order website pe dikhega</div></div>
           <button class="btn btn-rose" onclick="openProductModal()">+ Naya Product</button>
         </div>
         <div class="table-wrap">
@@ -297,8 +309,8 @@ tr:hover td{background:rgba(255,255,255,.02)}
           </div>
           <div class="table-scroll">
           <table>
-            <thead><tr><th>Photo</th><th>Naam</th><th>Category</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody id="prodTableBody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Loading...</td></tr></tbody>
+            <thead><tr><th style="width:32px"></th><th>Photo</th><th>Naam</th><th>Category</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="prodTableBody"><tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--muted)">Loading...</td></tr></tbody>
           </table>
           </div>
         </div>
@@ -307,14 +319,14 @@ tr:hover td{background:rgba(255,255,255,.02)}
       <!-- CATEGORIES -->
       <div class="page" id="page-categories">
         <div class="page-header">
-          <div><div class="page-title">Categories</div><div class="page-sub">Product categories manage karo</div></div>
+          <div><div class="page-title">Categories</div><div class="page-sub">⠿ ko drag karke order set karo</div></div>
           <button class="btn btn-rose" onclick="openCatModal()">+ Nayi Category</button>
         </div>
         <div class="table-wrap">
           <div class="table-scroll">
           <table>
-            <thead><tr><th>Photo</th><th>Naam</th><th>Description</th><th>Products</th><th>Actions</th></tr></thead>
-            <tbody id="catTableBody"><tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted)">Loading...</td></tr></tbody>
+            <thead><tr><th style="width:32px"></th><th>Photo</th><th>Naam</th><th>Description</th><th>Products</th><th>Actions</th></tr></thead>
+            <tbody id="catTableBody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Loading...</td></tr></tbody>
           </table>
           </div>
         </div>
@@ -323,7 +335,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
       <!-- GALLERY -->
       <div class="page" id="page-gallery">
         <div class="page-header">
-          <div><div class="page-title">Gallery</div><div class="page-sub">Dukan ki photos manage karo</div></div>
+          <div><div class="page-title">Gallery</div><div class="page-sub">⠿ icon drag karke order set karo</div></div>
           <button class="btn btn-rose" onclick="openGalleryUpload()">+ Photo Upload</button>
         </div>
         <div class="admin-gallery-grid" id="adminGalleryGrid">
@@ -334,14 +346,14 @@ tr:hover td{background:rgba(255,255,255,.02)}
       <!-- BANNERS -->
       <div class="page" id="page-banners">
         <div class="page-header">
-          <div><div class="page-title">Banners</div><div class="page-sub">Hero section banners manage karo</div></div>
+          <div><div class="page-title">Banners</div><div class="page-sub">⠿ ko drag karke order set karo</div></div>
           <button class="btn btn-rose" onclick="openBannerModal()">+ Naya Banner</button>
         </div>
         <div class="table-wrap">
           <div class="table-scroll">
           <table>
-            <thead><tr><th>Photo</th><th>Title</th><th>Subtitle</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody id="bannerTableBody"><tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted)">Loading...</td></tr></tbody>
+            <thead><tr><th style="width:32px"></th><th>Photo</th><th>Title</th><th>Subtitle</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="bannerTableBody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Loading...</td></tr></tbody>
           </table>
           </div>
         </div>
@@ -525,7 +537,7 @@ const SUPABASE_URL = 'https://jxbqnkrgcunzadvjiwvg.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp4YnFua3JnY3VuemFkdmppd3ZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2OTcyMTIsImV4cCI6MjA5ODI3MzIxMn0.vU4I6WKdsJLgH4afszIYmfLptmm1RMlJ4RApDDZaV-M';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-let allProducts=[], allCategories=[], adminPass='admin123';
+let allProducts=[], allCategories=[], allBanners=[], allGallery=[], adminPass='admin123';
 
 // ── LOGIN ──
 async function doLogin() {
@@ -553,13 +565,13 @@ async function doLogin() {
     }
   }
 }
-  
+
 function doLogout() {
-  localStorage.removeItem('omAdminLoggedIn');
   document.getElementById('loginScreen').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
   document.getElementById('loginPass').value = '';
   document.getElementById('loginErr').style.display = 'none';
+  localStorage.removeItem('omAdminLoggedIn');
 }
 
 // ── NAVIGATION ──
@@ -591,7 +603,7 @@ function updateStats() {
 
 // ── CATEGORIES ──
 async function loadCategories() {
-  const { data } = await sb.from('categories').select('*').order('name');
+  const { data } = await sb.from('categories').select('*').order('sort_order',{ascending:true}).order('name');
   allCategories = data || [];
   renderCatTable();
   fillCatSelect();
@@ -605,11 +617,12 @@ function fillCatSelect() {
 
 function renderCatTable() {
   const tbody = document.getElementById('catTableBody');
-  if(!allCategories.length){tbody.innerHTML='<tr><td colspan="5" class="empty-state"><div class="e-icon">🗂️</div><p>Koi category nahi hai</p></td></tr>';return}
+  if(!allCategories.length){tbody.innerHTML='<tr><td colspan="6" class="empty-state"><div class="e-icon">🗂️</div><p>Koi category nahi hai</p></td></tr>';return}
   tbody.innerHTML = allCategories.map(c => {
     const prodCount = allProducts.filter(p=>p.category_id===c.id).length;
     const img = c.image_url ? `<div class="thumb"><img src="${c.image_url}" alt="${c.name}"/></div>` : `<div class="thumb">🌸</div>`;
-    return `<tr>
+    return `<tr data-id="${c.id}">
+      <td><span class="drag-handle" title="Drag karke order badlo">⠿</span></td>
       <td>${img}</td>
       <td><strong>${c.name}</strong></td>
       <td style="color:var(--muted)">${c.description||'-'}</td>
@@ -643,6 +656,7 @@ async function saveCategory() {
   if(!name){showToast('Naam zaroori hai!','error');return}
   const id = document.getElementById('cat_id').value;
   const data = {name, description:document.getElementById('cat_desc').value.trim(), image_url:document.getElementById('cat_image_url').value||null};
+  if(!id) data.sort_order = nextSortOrder(allCategories);
   const { error } = id ? await sb.from('categories').update(data).eq('id',id) : await sb.from('categories').insert(data);
   if(error){showToast('Error: '+error.message,'error');return}
   showToast(id?'Category update ho gayi!':'Category add ho gayi!','success');
@@ -653,7 +667,7 @@ async function saveCategory() {
 
 // ── PRODUCTS ──
 async function loadProducts() {
-  const { data } = await sb.from('products').select('*,categories(name)').order('created_at',{ascending:false});
+  const { data } = await sb.from('products').select('*,categories(name)').order('sort_order',{ascending:true}).order('created_at',{ascending:false});
   allProducts = data || [];
   renderProdTable();
   updateStats();
@@ -663,12 +677,14 @@ function renderProdTable(filter='') {
   const tbody = document.getElementById('prodTableBody');
   let prods = allProducts;
   if(filter) prods = prods.filter(p=>p.name.toLowerCase().includes(filter.toLowerCase()));
-  if(!prods.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Koi product nahi mila</td></tr>';return}
+  if(!prods.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--muted)">Koi product nahi mila</td></tr>';return}
+  const handleCell = filter ? '<td></td>' : '<td><span class="drag-handle" title="Drag karke order badlo">⠿</span></td>';
   tbody.innerHTML = prods.map(p => {
     const img = p.image_url ? `<div class="thumb"><img src="${p.image_url}" alt="${p.name}"/></div>` : `<div class="thumb">💐</div>`;
     const status = p.is_available ? '<span class="badge badge-green">Available</span>' : '<span class="badge badge-red">Out of Stock</span>';
     const featured = p.is_featured ? '<span class="badge badge-rose" style="margin-left:.3rem">⭐</span>' : '';
-    return `<tr>
+    return `<tr data-id="${p.id}">
+      ${handleCell}
       <td>${img}</td>
       <td><strong>${p.name}</strong>${featured}</td>
       <td style="color:var(--muted)">${p.categories?.name||'-'}</td>
@@ -785,6 +801,7 @@ async function saveProduct() {
     is_featured:document.getElementById('prod_featured').checked,
     is_available:document.getElementById('prod_available').checked
   };
+  if(!id) data.sort_order = nextSortOrder(allProducts);
   const { error } = id ? await sb.from('products').update(data).eq('id',id) : await sb.from('products').insert(data);
   if(error){showToast('Error: '+error.message,'error');return}
   showToast(id?'Product update ho gaya!':'Product add ho gaya!','success');
@@ -794,12 +811,18 @@ async function saveProduct() {
 
 // ── GALLERY ──
 async function loadGallery() {
-  const { data } = await sb.from('gallery').select('*').order('created_at',{ascending:false});
+  const { data } = await sb.from('gallery').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:false});
+  allGallery = data || [];
+  document.getElementById('statGallery').textContent = allGallery.length;
+  renderGalleryGrid();
+}
+
+function renderGalleryGrid() {
   const grid = document.getElementById('adminGalleryGrid');
-  document.getElementById('statGallery').textContent = data?.length||0;
-  if(!data||!data.length){grid.innerHTML='<div class="empty-state"><div class="e-icon">🖼️</div><p>Koi photo nahi hai abhi</p></div>';return}
-  grid.innerHTML = data.map(g=>`
-    <div class="admin-gallery-item">
+  if(!allGallery.length){grid.innerHTML='<div class="empty-state"><div class="e-icon">🖼️</div><p>Koi photo nahi hai abhi</p></div>';return}
+  grid.innerHTML = allGallery.map(g=>`
+    <div class="admin-gallery-item" data-id="${g.id}">
+      <span class="gallery-drag-handle" title="Drag karke order badlo">⠿</span>
       <img src="${g.image_url}" alt="${g.caption||''}"/>
       <div class="del-overlay">
         <button class="btn btn-red btn-sm" onclick="confirmDelete('gallery','${g.id}','photo')">🗑️ Delete</button>
@@ -817,7 +840,7 @@ function openGalleryUpload() {
 async function saveGalleryPhoto() {
   const url = document.getElementById('gal_image_url').value;
   if(!url){showToast('Pehle photo upload karo!','error');return}
-  const { error } = await sb.from('gallery').insert({image_url:url, caption:document.getElementById('gal_caption').value.trim()||null});
+  const { error } = await sb.from('gallery').insert({image_url:url, caption:document.getElementById('gal_caption').value.trim()||null, sort_order: nextSortOrder(allGallery)});
   if(error){showToast('Error: '+error.message,'error');return}
   showToast('Photo add ho gayi!','success');
   closeModal('galleryModal');
@@ -826,13 +849,19 @@ async function saveGalleryPhoto() {
 
 // ── BANNERS ──
 async function loadBanners() {
-  const { data } = await sb.from('banners').select('*').order('created_at',{ascending:false});
+  const { data } = await sb.from('banners').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:false});
+  allBanners = data || [];
+  renderBannerTable();
+}
+
+function renderBannerTable() {
   const tbody = document.getElementById('bannerTableBody');
-  if(!data||!data.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted)">Koi banner nahi hai</td></tr>';return}
-  tbody.innerHTML = data.map(b=>{
+  if(!allBanners.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Koi banner nahi hai</td></tr>';return}
+  tbody.innerHTML = allBanners.map(b=>{
     const img = b.image_url ? `<div class="thumb"><img src="${b.image_url}" alt="${b.title}"/></div>` : `<div class="thumb">🎨</div>`;
     const status = b.is_active ? '<span class="badge badge-green">Active</span>' : '<span class="badge badge-red">Inactive</span>';
-    return `<tr>
+    return `<tr data-id="${b.id}">
+      <td><span class="drag-handle" title="Drag karke order badlo">⠿</span></td>
       <td>${img}</td>
       <td><strong>${b.title||'-'}</strong></td>
       <td style="color:var(--muted)">${b.subtitle||'-'}</td>
@@ -870,6 +899,7 @@ async function saveBanner() {
     image_url:document.getElementById('banner_image_url').value||null,
     is_active:document.getElementById('banner_active').checked
   };
+  if(!id) data.sort_order = nextSortOrder(allBanners);
   const { error } = id ? await sb.from('banners').update(data).eq('id',id) : await sb.from('banners').insert(data);
   if(error){showToast('Error: '+error.message,'error');return}
   showToast('Banner save ho gaya!','success');
@@ -936,6 +966,108 @@ async function previewAndUploadImage(inputId, previewId, urlFieldId, progressId)
   setTimeout(()=>{progressWrap.style.display='none';document.getElementById(barId).style.width='0%'},800);
 }
 
+// ── DRAG REORDER ──
+// Naya item add karte waqt list ke aakhir mein daalne ke liye agla sort_order number
+function nextSortOrder(arr) {
+  if(!arr.length) return 0;
+  return Math.max(...arr.map(x=>x.sort_order ?? 0)) + 1;
+}
+
+// Reusable drag-to-reorder: Pointer Events use kiya hai isliye mouse aur touch (mobile) dono pe kaam karta hai
+function setupSortable(containerEl, itemSelector, handleSelector, table, getLocalArr) {
+  if(!containerEl) return;
+  let dragItem = null, ghost = null, offsetX = 0, offsetY = 0;
+
+  containerEl.addEventListener('pointerdown', e => {
+    const handle = e.target.closest(handleSelector);
+    if(!handle || !containerEl.contains(handle)) return;
+    const item = handle.closest(itemSelector);
+    if(!item) return;
+    e.preventDefault();
+    dragItem = item;
+    const rect = item.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+
+    ghost = document.createElement('div');
+    ghost.className = 'drag-ghost';
+    ghost.style.position = 'fixed';
+    ghost.style.left = rect.left + 'px';
+    ghost.style.top = rect.top + 'px';
+    ghost.style.width = rect.width + 'px';
+    ghost.style.height = rect.height + 'px';
+    ghost.style.zIndex = 9999;
+    ghost.style.pointerEvents = 'none';
+    if(item.tagName === 'TR') {
+      const t = document.createElement('table');
+      const tb = document.createElement('tbody');
+      tb.appendChild(item.cloneNode(true));
+      t.appendChild(tb);
+      ghost.appendChild(t);
+    } else {
+      ghost.appendChild(item.cloneNode(true));
+    }
+    document.body.appendChild(ghost);
+    item.classList.add('dragging-source');
+
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', onUp, {once:true});
+  });
+
+  function onMove(e) {
+    if(!dragItem || !ghost) return;
+    const left = e.clientX - offsetX, top = e.clientY - offsetY;
+    ghost.style.left = left + 'px';
+    ghost.style.top = top + 'px';
+    // Cursor ki raw position ke bajaye ghost ka ACTUAL center point use kar rahe hain —
+    // pehle cursor (drag-handle ki position, jo item ke edge pe hota hai) se nearest
+    // item nikal rahe the, isi farak ki wajah se item ek position upar/niche drop ho jaata tha
+    const gw = ghost.offsetWidth, gh = ghost.offsetHeight;
+    const px = left + gw/2, py = top + gh/2;
+    const items = Array.from(containerEl.querySelectorAll(itemSelector)).filter(i => i !== dragItem);
+    const rects = items.map(it => it.getBoundingClientRect());
+    let target = null, targetRect = null, closestDist = Infinity;
+    for(let i = 0; i < items.length; i++) {
+      const r = rects[i];
+      const cx = r.left + r.width/2, cy = r.top + r.height/2;
+      const dist = Math.hypot(px - cx, py - cy);
+      if(dist < closestDist) { closestDist = dist; target = items[i]; targetRect = r; }
+    }
+    if(target) {
+      const cx = targetRect.left + targetRect.width/2, cy = targetRect.top + targetRect.height/2;
+      // Grid layout (Gallery jaisa, jahan ek row me kai items left-right rehte hain) me
+      // agar target ke row me koi doosra item bhi mile, aur ghost waqai usi row me ho,
+      // to X (left-right) se decide karo. Warna (table rows jaisi single-column list)
+      // pehle jaisa Y (upar-niche) se — isse left-right aur up-down dono sahi chalenge
+      const sameRowAsGhost = Math.abs(py - cy) < targetRect.height / 2;
+      const hasRowMate = rects.some(rr => rr !== targetRect && Math.abs(rr.top - targetRect.top) < targetRect.height / 2);
+      const after = (hasRowMate && sameRowAsGhost) ? (px > cx) : (py > cy);
+      if(after) target.after(dragItem); else target.before(dragItem);
+    }
+  }
+
+  async function onUp() {
+    document.removeEventListener('pointermove', onMove);
+    if(ghost) { ghost.remove(); ghost = null; }
+    if(dragItem) dragItem.classList.remove('dragging-source');
+    const orderedIds = Array.from(containerEl.querySelectorAll(itemSelector)).map(el => el.dataset.id);
+    dragItem = null;
+    try {
+      await Promise.all(orderedIds.map((id, i) => sb.from(table).update({sort_order:i}).eq('id', id)));
+      const arr = getLocalArr ? getLocalArr() : null;
+      if(arr) arr.sort((a,b) => orderedIds.indexOf(String(a.id)) - orderedIds.indexOf(String(b.id)));
+      showToast('Order update ho gaya!','success');
+    } catch(e) {
+      showToast('Order save nahi ho paya, fir try karo','error');
+    }
+  }
+}
+
+setupSortable(document.getElementById('prodTableBody'), 'tr', '.drag-handle', 'products', () => allProducts);
+setupSortable(document.getElementById('catTableBody'), 'tr', '.drag-handle', 'categories', () => allCategories);
+setupSortable(document.getElementById('bannerTableBody'), 'tr', '.drag-handle', 'banners', () => allBanners);
+setupSortable(document.getElementById('adminGalleryGrid'), '.admin-gallery-item', '.gallery-drag-handle', 'gallery', () => allGallery);
+
 // ── DELETE ──
 function confirmDelete(type, id, name) {
   document.getElementById('confirmMsg').textContent = `"${name}" delete karna chahte hain?`;
@@ -968,13 +1100,16 @@ function showToast(msg, type='success') {
 }
 
 document.getElementById('loginPass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
-  
-  if (localStorage.getItem('omAdminLoggedIn') === 'true') {
+
+// Pehle se login ho to dobara password na maange
+if (localStorage.getItem('omAdminLoggedIn') === 'true') {
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
   loadAll();
 }
-  function applyTheme(theme){
+
+// ── THEME TOGGLE ──
+function applyTheme(theme){
   document.documentElement.setAttribute('data-theme', theme);
   document.getElementById('themeBtn').textContent = theme === 'light' ? '☀️' : '🌙';
   localStorage.setItem('omAdminTheme', theme);
@@ -984,7 +1119,6 @@ function toggleTheme(){
   applyTheme(current === 'light' ? 'dark' : 'light');
 }
 applyTheme(localStorage.getItem('omAdminTheme') || 'dark');
-  
 </script>
 </body>
 </html>

@@ -263,7 +263,7 @@ footer{background:var(--deep);border-top:1px solid rgba(196,92,138,.08);padding:
   <div class="products-controls">
     <input class="search-box" type="text" id="searchBox" placeholder="🔍 Search..."/>
     <div class="filter-tabs" id="filterTabs">
-      <span class="filter-tab active" data-cat="all">Sab</span>
+      <span class="filter-tab active" data-cat="all">All</span>
     </div>
   </div>
   <div class="products-grid" id="productsGrid">
@@ -497,7 +497,7 @@ function renderFilterTabs() {
   const catTabs = allCategories.map(c =>
     `<span class="filter-tab" data-cat="${c.id}" onclick="filterByCat('${c.id}')">${c.name}</span>`
   ).join('');
-  tabs.innerHTML = `<span class="filter-tab active" data-cat="all" onclick="filterByCat('all')">Sab</span>${catTabs}`;
+  tabs.innerHTML = `<span class="filter-tab active" data-cat="all" onclick="filterByCat('all')">All</span>${catTabs}`;
   document.getElementById('footerCats').innerHTML = allCategories.slice(0,5).map(c =>
     `<li><a href="#products" onclick="filterByCat('${c.id}')">${c.name}</a></li>`
   ).join('');

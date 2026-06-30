@@ -16,6 +16,12 @@
   --red:#e74c3c;--yellow:#f39c12;--blue:#3498db;
   --text:rgba(245,237,214,0.9);--muted:rgba(245,237,214,0.45);
 }
+  [data-theme="light"]{
+  --bg:#FAF7F2;--sidebar:#FFFFFF;--card:#FFFFFF;--border:rgba(0,0,0,0.08);
+  --rose:#C45C8A;--blush:#A8336B;--ivory:#2A1B2E;--green:#1FAE56;
+  --red:#e74c3c;--yellow:#f39c12;--blue:#3498db;
+  --text:rgba(42,27,46,0.85);--muted:rgba(42,27,46,0.45);
+}
 body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;min-height:100vh}
 
 /* LOGIN */
@@ -46,6 +52,8 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-s
 .sidebar-footer{margin-top:auto;padding:1rem 1.4rem;border-top:1px solid var(--border)}
 .logout-btn{background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.3);color:var(--red);padding:.55rem 1rem;border-radius:8px;font-size:.82rem;cursor:pointer;width:100%;transition:.2s}
 .logout-btn:hover{background:rgba(231,76,60,.2)}
+.theme-btn{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text);padding:.55rem 1rem;border-radius:8px;font-size:.82rem;cursor:pointer;width:100%;margin-bottom:.6rem;transition:.2s}
+.theme-btn:hover{background:rgba(255,255,255,.1)}
 
 /* MAIN */
 .main{margin-left:220px;padding:1.5rem;flex:1}
@@ -247,6 +255,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
       <div class="nav-item" onclick="showPage('banners')"><span class="icon">🎨</span><span>Banners</span></div>
       <div class="nav-item" onclick="showPage('settings')"><span class="icon">⚙️</span><span>Settings</span></div>
       <div class="sidebar-footer">
+        <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙 <span id="themeBtnText">Dark Mode</span></button>
         <button class="logout-btn" onclick="doLogout()">🚪 <span>Logout</span></button>
       </div>
     </aside>
@@ -528,24 +537,23 @@ async function doLogin() {
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('app').style.display = 'block';
       adminPass = correctPass;
+      localStorage.setItem('omAdminLoggedIn', 'true');
       loadAll();
     } else {
       document.getElementById('loginErr').style.display = 'block';
     }
   } catch(e) {
-    if (pass === correctPass) {
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  adminPass = correctPass;
-  localStorage.setItem('omAdminLoggedIn', 'true');
-  loadAll();
-}
-    else {
+    if (pass === 'admin123') {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      localStorage.setItem('omAdminLoggedIn', 'true');
+      loadAll();
+    } else {
       document.getElementById('loginErr').style.display = 'block';
     }
   }
 }
-
+  
 function doLogout() {
   localStorage.removeItem('omAdminLoggedIn');
   document.getElementById('loginScreen').style.display = 'flex';
@@ -966,6 +974,17 @@ document.getElementById('loginPass').addEventListener('keydown', e => { if(e.key
   document.getElementById('app').style.display = 'block';
   loadAll();
 }
+  function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  document.getElementById('themeBtn').innerHTML = theme === 'light' ? '☀️ <span>Light Mode</span>' : '🌙 <span>Dark Mode</span>';
+  localStorage.setItem('omAdminTheme', theme);
+}
+function toggleTheme(){
+  const current = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+  applyTheme(current === 'light' ? 'dark' : 'light');
+}
+applyTheme(localStorage.getItem('omAdminTheme') || 'dark');
+  
 </script>
 </body>
 </html>

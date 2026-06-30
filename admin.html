@@ -533,17 +533,21 @@ async function doLogin() {
       document.getElementById('loginErr').style.display = 'block';
     }
   } catch(e) {
-    if (pass === 'admin123') {
-      document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('app').style.display = 'block';
-      loadAll();
-    } else {
+    if (pass === correctPass) {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  adminPass = correctPass;
+  localStorage.setItem('omAdminLoggedIn', 'true');
+  loadAll();
+}
+    else {
       document.getElementById('loginErr').style.display = 'block';
     }
   }
 }
 
 function doLogout() {
+  localStorage.removeItem('omAdminLoggedIn');
   document.getElementById('loginScreen').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
   document.getElementById('loginPass').value = '';
@@ -956,6 +960,12 @@ function showToast(msg, type='success') {
 }
 
 document.getElementById('loginPass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+  
+  if (localStorage.getItem('omAdminLoggedIn') === 'true') {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  loadAll();
+}
 </script>
 </body>
 </html>

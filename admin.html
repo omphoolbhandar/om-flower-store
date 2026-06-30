@@ -49,11 +49,10 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-s
 .nav-item:hover{color:var(--ivory);background:rgba(255,255,255,.04)}
 .nav-item.active{color:var(--blush);border-left-color:var(--rose);background:rgba(196,92,138,.08)}
 .nav-item .icon{font-size:1.1rem;width:22px;text-align:center}
-.sidebar-footer{margin-top:auto;padding:1rem 1.4rem;border-top:1px solid var(--border)}
-.logout-btn{background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.3);color:var(--red);padding:.55rem 1rem;border-radius:8px;font-size:.82rem;cursor:pointer;width:100%;transition:.2s}
-.logout-btn:hover{background:rgba(231,76,60,.2)}
-.theme-btn{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text);padding:.55rem 1rem;border-radius:8px;font-size:.82rem;cursor:pointer;width:100%;margin-bottom:.6rem;transition:.2s}
-.theme-btn:hover{background:rgba(255,255,255,.1)}
+.top-corner-bar{position:fixed;top:1rem;right:1rem;z-index:200;display:flex;gap:.6rem}
+.icon-btn{background:var(--card);border:1px solid var(--border);color:var(--text);width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.15rem;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.18);transition:.2s}
+.icon-btn:hover{transform:translateY(-2px)}
+.icon-btn.logout-btn{color:var(--red);border-color:rgba(231,76,60,.3)}
 
 /* MAIN */
 .main{margin-left:220px;padding:1.5rem;flex:1}
@@ -240,6 +239,12 @@ tr:hover td{background:rgba(255,255,255,.02)}
 
 <!-- APP -->
 <div id="app">
+  <div id="app">
+  <div class="top-corner-bar">
+    <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Theme Badlo">🌙</button>
+    <button class="icon-btn logout-btn" onclick="doLogout()" title="Logout">🚪</button>
+  </div>
+  <div class="layout">
   <div class="layout">
 
     <!-- SIDEBAR -->
@@ -254,10 +259,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
       <div class="nav-item" onclick="showPage('gallery')"><span class="icon">🖼️</span><span>Gallery</span></div>
       <div class="nav-item" onclick="showPage('banners')"><span class="icon">🎨</span><span>Banners</span></div>
       <div class="nav-item" onclick="showPage('settings')"><span class="icon">⚙️</span><span>Settings</span></div>
-      <div class="sidebar-footer">
-        <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙 <span id="themeBtnText">Dark Mode</span></button>
-        <button class="logout-btn" onclick="doLogout()">🚪 <span>Logout</span></button>
-      </div>
+      
     </aside>
 
     <!-- MAIN -->
@@ -976,7 +978,7 @@ document.getElementById('loginPass').addEventListener('keydown', e => { if(e.key
 }
   function applyTheme(theme){
   document.documentElement.setAttribute('data-theme', theme);
-  document.getElementById('themeBtn').innerHTML = theme === 'light' ? '☀️ <span>Light Mode</span>' : '🌙 <span>Dark Mode</span>';
+  document.getElementById('themeBtn').textContent = theme === 'light' ? '☀️' : '🌙';
   localStorage.setItem('omAdminTheme', theme);
 }
 function toggleTheme(){

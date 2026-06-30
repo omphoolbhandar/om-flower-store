@@ -71,6 +71,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-s
 .table-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
 .table-search{padding:1rem 1.2rem;border-bottom:1px solid var(--border)}
 .table-search input{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:.5rem .9rem;color:var(--ivory);font-size:.85rem;outline:none;width:260px}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse}
 thead{background:rgba(255,255,255,.04)}
 th{padding:.8rem 1rem;text-align:left;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
@@ -92,7 +93,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
 .modal-title{font-size:1.05rem;font-weight:600;color:var(--ivory)}
 .modal-close{background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;padding:.2rem}
 .modal-body{padding:1.5rem}
-.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:.7rem}
+.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:.7rem;position:sticky;bottom:0;background:var(--card);z-index:1}
 
 /* FORM */
 .form-group{margin-bottom:1.2rem}
@@ -110,6 +111,19 @@ tr:hover td{background:rgba(255,255,255,.02)}
 .img-upload-area:hover{border-color:var(--rose);background:rgba(196,92,138,.05)}
 .img-upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer}
 .img-preview{max-width:100%;max-height:180px;border-radius:8px;margin-top:1rem;object-fit:contain}
+
+/* MULTI PHOTO GRID */
+.multi-photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:.7rem;margin-top:1rem}
+.multi-photo-item{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;border:2px solid var(--border)}
+.multi-photo-item.is-main{border-color:var(--rose)}
+.multi-photo-item img{width:100%;height:100%;object-fit:cover}
+.multi-photo-item .mp-actions{position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;gap:.4rem;opacity:0;transition:.2s}
+.multi-photo-item:hover .mp-actions{opacity:1}
+.mp-btn{width:26px;height:26px;border-radius:50%;border:none;cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center}
+.mp-btn.star{background:#f4c430;color:#fff}
+.mp-btn.del{background:var(--red);color:#fff}
+.mp-main-badge{position:absolute;top:.3rem;left:.3rem;background:var(--rose);color:#fff;font-size:.6rem;padding:.1rem .4rem;border-radius:6px;font-weight:600}
+.mp-uploading{display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);color:var(--muted);font-size:1.3rem}
 .upload-progress{height:4px;background:rgba(255,255,255,.1);border-radius:2px;margin-top:.8rem;overflow:hidden;display:none}
 .upload-progress-bar{height:100%;background:var(--rose);border-radius:2px;transition:width .3s}
 
@@ -138,11 +152,64 @@ tr:hover td{background:rgba(255,255,255,.02)}
 
 /* RESPONSIVE */
 @media(max-width:768px){
-  .sidebar{width:60px;overflow:hidden}
-  .sidebar .logo-text,.sidebar .logo-sub,.nav-item span:not(.icon),.sidebar-footer .logout-btn span{display:none}
-  .nav-item{padding:.65rem;justify-content:center}
-  .main{margin-left:60px;padding:1rem}
+  /* Sidebar -> bottom tab bar (easier thumb reach than a side rail) */
+  .layout{flex-direction:column}
+  .sidebar{
+    width:100%;height:auto;
+    top:auto;left:0;right:0;bottom:0;
+    flex-direction:row;align-items:stretch;justify-content:space-around;
+    padding:.25rem .2rem;
+    border-right:none;border-top:1px solid var(--border);
+    overflow-x:auto;overflow-y:hidden;
+    box-shadow:0 -4px 14px rgba(0,0,0,.35);
+  }
+  .sidebar-logo{display:none}
+  .nav-item{
+    flex:1;flex-direction:column;justify-content:center;align-items:center;
+    gap:.15rem;padding:.55rem .2rem;
+    border-left:none;border-top:3px solid transparent;
+  }
+  .nav-item span:not(.icon){display:none}
+  .nav-item.active{border-left-color:transparent;border-top-color:var(--rose)}
+  .nav-item .icon{font-size:1.4rem;width:auto}
+  .sidebar-footer{margin-top:0;padding:.25rem .3rem;border-top:none;display:flex;align-items:center}
+  .logout-btn{width:auto;padding:.5rem .6rem;border-radius:10px;font-size:1.3rem}
+  .logout-btn span{display:none}
+
+  .main{margin-left:0;padding:1rem 1rem 5.5rem}
+
+  /* Page headers + actions stack and become full-width tappable */
+  .page-header{flex-direction:column;align-items:stretch;gap:.6rem}
+  .page-header .btn{width:100%;justify-content:center;padding:.75rem 1rem}
+  .page-title{font-size:1.25rem}
+
+  /* Stats: 2-per-row instead of 1, far less scrolling */
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:.7rem}
+  .stat-card{padding:1rem}
+  .stat-card .s-num{font-size:1.5rem}
+
+  /* Tables scroll horizontally instead of squashing columns unreadably */
+  .table-search input{width:100%}
+  .table-scroll table{min-width:640px}
+  th,td{padding:.7rem .8rem;font-size:.82rem}
+
+  /* Buttons & icons get bigger tap targets on touch screens */
+  .btn{padding:.65rem 1.1rem}
+  .btn-sm{padding:.5rem .85rem;font-size:.85rem}
+
+  /* Modals become bottom sheets - easier reach, no awkward centered floating box */
+  .overlay{padding:0;align-items:flex-end}
+  .modal{max-width:100%;width:100%;max-height:92vh;border-radius:18px 18px 0 0}
+  .modal-body{padding:1.2rem}
+
   .form-row{grid-template-columns:1fr}
+
+  .multi-photo-grid{grid-template-columns:repeat(3,1fr)}
+  .admin-gallery-grid{grid-template-columns:repeat(2,1fr)}
+
+  .login-box{width:90%;max-width:360px;padding:2rem 1.4rem}
+
+  .toast{left:1rem;right:1rem;bottom:5.5rem;min-width:auto;text-align:center}
 }
 </style>
 </head>
@@ -216,10 +283,12 @@ tr:hover td{background:rgba(255,255,255,.02)}
           <div class="table-search">
             <input type="text" id="prodSearch" placeholder="🔍 Product dhundho..." oninput="filterProdTable()"/>
           </div>
+          <div class="table-scroll">
           <table>
             <thead><tr><th>Photo</th><th>Naam</th><th>Category</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody id="prodTableBody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Loading...</td></tr></tbody>
           </table>
+          </div>
         </div>
       </div>
 
@@ -230,10 +299,12 @@ tr:hover td{background:rgba(255,255,255,.02)}
           <button class="btn btn-rose" onclick="openCatModal()">+ Nayi Category</button>
         </div>
         <div class="table-wrap">
+          <div class="table-scroll">
           <table>
             <thead><tr><th>Photo</th><th>Naam</th><th>Description</th><th>Products</th><th>Actions</th></tr></thead>
             <tbody id="catTableBody"><tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted)">Loading...</td></tr></tbody>
           </table>
+          </div>
         </div>
       </div>
 
@@ -255,10 +326,12 @@ tr:hover td{background:rgba(255,255,255,.02)}
           <button class="btn btn-rose" onclick="openBannerModal()">+ Naya Banner</button>
         </div>
         <div class="table-wrap">
+          <div class="table-scroll">
           <table>
             <thead><tr><th>Photo</th><th>Title</th><th>Subtitle</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody id="bannerTableBody"><tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted)">Loading...</td></tr></tbody>
           </table>
+          </div>
         </div>
       </div>
 
@@ -307,15 +380,17 @@ tr:hover td{background:rgba(255,255,255,.02)}
       <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="prod_desc" placeholder="Product ki jankari..."></textarea></div>
       <div class="form-group"><label class="form-label">WhatsApp Message (order ke liye)</label><input class="form-input" id="prod_wa" placeholder="Namaste! Mujhe yeh product chahiye..."/></div>
       <div class="form-group">
-        <label class="form-label">Product Photo</label>
+        <label class="form-label">Product Photos (multiple chun sakte ho)</label>
         <div class="img-upload-area" id="prodImgArea">
-          <input type="file" accept="image/*" id="prodImgFile" onchange="previewAndUploadImage('prodImgFile','prodImgPreview','prod_image_url','prodUploadProgress')"/>
-          <div>📸 Photo chunein ya drag karein</div>
-          <div style="font-size:.75rem;color:var(--muted);margin-top:.3rem">JPG, PNG, WebP (max 5MB)</div>
-          <img id="prodImgPreview" class="img-preview" style="display:none"/>
+          <input type="file" accept="image/*" id="prodImgFile" multiple onchange="handleMultiPhotoSelect(event)"/>
+          <div>📸 Photo chunein ya drag karein (ek se zyada bhi)</div>
+          <div style="font-size:.75rem;color:var(--muted);margin-top:.3rem">JPG, PNG, WebP (max 5MB har ek)</div>
           <div class="upload-progress" id="prodUploadProgress"><div class="upload-progress-bar" id="prodUploadProgressBar"></div></div>
         </div>
+        <div class="multi-photo-grid" id="prodPhotosGrid"></div>
+        <div style="font-size:.74rem;color:var(--muted);margin-top:.5rem">⭐ Pehli photo "main photo" hogi jo product card pe dikhegi. Kisi bhi photo ko star karke main bana sakte ho.</div>
         <input type="hidden" id="prod_image_url"/>
+        <input type="hidden" id="prod_images_json" value="[]"/>
       </div>
       <div style="display:flex;gap:1.5rem;flex-wrap:wrap">
         <label class="form-check"><input type="checkbox" id="prod_featured"/> ⭐ Featured product</label>
@@ -596,18 +671,27 @@ function filterProdTable() {
   renderProdTable(document.getElementById('prodSearch').value);
 }
 
+// ── MULTI PHOTO STATE ──
+let currentProductPhotos = []; // array of image URLs, [0] is always treated as main
+
 function openProductModal(prod=null) {
   document.getElementById('prod_id').value = prod?.id||'';
   document.getElementById('prod_name').value = prod?.name||'';
   document.getElementById('prod_price').value = prod?.price||'';
   document.getElementById('prod_desc').value = prod?.description||'';
   document.getElementById('prod_wa').value = prod?.whatsapp_msg||'';
-  document.getElementById('prod_image_url').value = prod?.image_url||'';
   document.getElementById('prod_featured').checked = prod?.is_featured||false;
   document.getElementById('prod_available').checked = prod?.is_available!==false;
   document.getElementById('prod_cat').value = prod?.category_id||'';
-  const prev = document.getElementById('prodImgPreview');
-  if(prod?.image_url){prev.src=prod.image_url;prev.style.display='block'}else{prev.style.display='none'}
+
+  // Existing photos load karo: main image_url pehle, baaki images[] array se
+  currentProductPhotos = [];
+  if (prod?.image_url) currentProductPhotos.push(prod.image_url);
+  if (prod?.images && Array.isArray(prod.images)) {
+    prod.images.forEach(url => { if (url && !currentProductPhotos.includes(url)) currentProductPhotos.push(url); });
+  }
+  renderProductPhotosGrid();
+
   document.getElementById('productModalTitle').textContent = prod ? 'Product Edit Karo' : 'Naya Product';
   openModal('productModal');
 }
@@ -615,6 +699,60 @@ function openProductModal(prod=null) {
 function editProduct(id) {
   const prod = allProducts.find(p=>p.id===id);
   if(prod) openProductModal(prod);
+}
+
+function renderProductPhotosGrid() {
+  const grid = document.getElementById('prodPhotosGrid');
+  grid.innerHTML = currentProductPhotos.map((url, i) => `
+    <div class="multi-photo-item ${i===0?'is-main':''}">
+      ${i===0 ? '<span class="mp-main-badge">Main</span>' : ''}
+      <img src="${url}" alt="photo ${i+1}"/>
+      <div class="mp-actions">
+        ${i!==0 ? `<button class="mp-btn star" title="Main banao" onclick="makeMainPhoto(${i})">⭐</button>` : ''}
+        <button class="mp-btn del" title="Hatao" onclick="removeProductPhoto(${i})">🗑️</button>
+      </div>
+    </div>
+  `).join('');
+  // Hidden fields update — backend ko bhejne ke liye
+  document.getElementById('prod_image_url').value = currentProductPhotos[0] || '';
+  document.getElementById('prod_images_json').value = JSON.stringify(currentProductPhotos.slice(1));
+}
+
+function makeMainPhoto(index) {
+  const [chosen] = currentProductPhotos.splice(index, 1);
+  currentProductPhotos.unshift(chosen);
+  renderProductPhotosGrid();
+}
+
+function removeProductPhoto(index) {
+  currentProductPhotos.splice(index, 1);
+  renderProductPhotosGrid();
+}
+
+// Multiple files select hone par ek ek karke upload karo
+async function handleMultiPhotoSelect(event) {
+  const files = Array.from(event.target.files || []);
+  if (!files.length) return;
+  const progressWrap = document.getElementById('prodUploadProgress');
+  const bar = document.getElementById('prodUploadProgressBar');
+  progressWrap.style.display = 'block';
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    if (file.size > 5*1024*1024) { showToast(`${file.name} 5MB se badi hai, skip ki gayi`, 'error'); continue; }
+    bar.style.width = Math.round(((i+0.3)/files.length)*100) + '%';
+    const ext = file.name.split('.').pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substr(2,6)}.${ext}`;
+    const { error } = await sb.storage.from('images').upload(fileName, file, {contentType:file.type, upsert:true});
+    if (error) { showToast('Upload failed: '+error.message, 'error'); continue; }
+    const { data: urlData } = sb.storage.from('images').getPublicUrl(fileName);
+    currentProductPhotos.push(urlData.publicUrl);
+    bar.style.width = Math.round(((i+1)/files.length)*100) + '%';
+    renderProductPhotosGrid();
+  }
+  showToast('Photos upload ho gayi!', 'success');
+  setTimeout(() => { progressWrap.style.display='none'; bar.style.width='0%'; }, 800);
+  event.target.value = ''; // input reset taaki same file dobara select ho sake
 }
 
 async function saveProduct() {
@@ -627,7 +765,8 @@ async function saveProduct() {
     description:document.getElementById('prod_desc').value.trim(),
     whatsapp_msg:document.getElementById('prod_wa').value.trim(),
     category_id:document.getElementById('prod_cat').value||null,
-    image_url:document.getElementById('prod_image_url').value||null,
+    image_url: currentProductPhotos[0] || null,
+    images: currentProductPhotos.slice(1),
     is_featured:document.getElementById('prod_featured').checked,
     is_available:document.getElementById('prod_available').checked
   };

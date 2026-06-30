@@ -452,7 +452,7 @@ async function loadSettings() {
     document.getElementById('shopPhone').textContent = phone;
     document.getElementById('shopAddr').textContent = addr;
     document.getElementById('shopPhoneCard').href = 'tel:' + phone.replace(/\D/g,'');
-    document.getElementById('shopWACard').href = `https://wa.me/${waNum}`;
+    document.getElementById('shopWACard').href = `https://wa.me/${waNum}?text=Hello! Mujhe flowers order karne hain.`;
     document.getElementById('shopWA').textContent = 'Chat Now';
     document.getElementById('ctaWA').href = `https://wa.me/${waNum}?text=Hello! Mujhe flowers order karne hain.`;
     document.getElementById('footerPhone').textContent = '📞 ' + phone;

@@ -670,6 +670,7 @@ async function loadProducts() {
   const { data } = await sb.from('products').select('*,categories(name)').order('sort_order',{ascending:true}).order('created_at',{ascending:false});
   allProducts = data || [];
   renderProdTable();
+  renderProdTable();
   updateStats();
 }
 

@@ -450,6 +450,7 @@ async function loadSettings() {
     const addr = settings.shop_address || 'Main Bazar, Aapka Shahar';
     const name = settings.shop_name || 'Om Flower Store';
     document.getElementById('shopPhone').textContent = phone;
+    document.getElementById('shopAddr').textContent = addr;
     document.getElementById('shopPhoneCard').href = 'tel:' + phone.replace(/\D/g,'');
     document.getElementById('shopWACard').href = `https://wa.me/${waNum}`;
     document.getElementById('shopWA').textContent = 'Chat Now';

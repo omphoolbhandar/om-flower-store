@@ -582,6 +582,7 @@ function showPage(name) {
   document.querySelectorAll('.nav-item').forEach(n => {
     if(n.getAttribute('onclick')?.includes(name)) n.classList.add('active');
   });
+  localStorage.setItem('omAdminPage', name);
 }
 
 // ── LOAD ALL ──
@@ -592,6 +593,7 @@ async function loadAll() {
   await loadBanners();
   await loadSettings();
   updateStats();
+  showPage(localStorage.getItem('omAdminPage') || 'dashboard');
 }
 
 // ── STATS ──
@@ -670,7 +672,7 @@ async function loadProducts() {
   const { data } = await sb.from('products').select('*,categories(name)').order('sort_order',{ascending:true}).order('created_at',{ascending:false});
   allProducts = data || [];
   renderProdTable();
-  renderProdTable();
+  renderCatTable();
   updateStats();
 }
 

@@ -242,6 +242,7 @@ tr.dragging-source{opacity:.35}
     <div class="login-logo">🌸</div>
     <div class="login-title">Om Flower Store</div>
     <div class="login-sub">Admin Panel – Sirf aapke liye</div>
+    <input type="email" id="loginEmail" placeholder="Email daalo" style="margin-bottom:1rem"/>
     <input type="password" id="loginPass" placeholder="Password daalo" onkeydown="if(event.key==='Enter')doLogin()"/>
     <button onclick="doLogin()">Login Karein</button>
     <div class="login-err" id="loginErr">❌ Galat password!</div>
@@ -537,39 +538,30 @@ const SUPABASE_URL = 'https://jxbqnkrgcunzadvjiwvg.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp4YnFua3JnY3VuemFkdmppd3ZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2OTcyMTIsImV4cCI6MjA5ODI3MzIxMn0.vU4I6WKdsJLgH4afszIYmfLptmm1RMlJ4RApDDZaV-M';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-let allProducts=[], allCategories=[], allBanners=[], allGallery=[], adminPass='admin123';
+let allProducts=[], allCategories=[], allBanners=[], allGallery=[];
 
 // ── LOGIN ──
 async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
   const pass = document.getElementById('loginPass').value;
-  try {
-    const { data } = await sb.from('settings').select('value').eq('key','admin_password').single();
-    const correctPass = data?.value || 'admin123';
-    if (pass === correctPass) {
-      document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('app').style.display = 'block';
-      adminPass = correctPass;
-      localStorage.setItem('omAdminLoggedIn', 'true');
-      loadAll();
-    } else {
-      document.getElementById('loginErr').style.display = 'block';
-    }
-  } catch(e) {
-    if (pass === 'admin123') {
-      document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('app').style.display = 'block';
-      localStorage.setItem('omAdminLoggedIn', 'true');
-      loadAll();
-    } else {
-      document.getElementById('loginErr').style.display = 'block';
-    }
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if (error) {
+    document.getElementById('loginErr').textContent = '❌ ' + error.message;
+    document.getElementById('loginErr').style.display = 'block';
+    return;
   }
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  localStorage.setItem('omAdminLoggedIn', 'true');
+  loadAll();
 }
 
 function doLogout() {
+  sb.auth.signOut();
   document.getElementById('loginScreen').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
   document.getElementById('loginPass').value = '';
+  document.getElementById('loginEmail').value = '';
   document.getElementById('loginErr').style.display = 'none';
   localStorage.removeItem('omAdminLoggedIn');
 }

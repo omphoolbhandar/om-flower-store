@@ -379,6 +379,7 @@ tr.dragging-source{opacity:.35}
             <div class="form-group"><label class="form-label">Confirm Password</label><input class="form-input" id="set_confirm_pass" type="password" placeholder="Dobara likho"/></div>
           </div>
           <button class="btn btn-rose" onclick="saveSettings()" style="width:fit-content">💾 Settings Save Karo</button>
+          <button class="btn btn-rose" onclick="changeAdminPassword()" style="width:fit-content;margin-left:.7rem">🔐 Password Badlo</button>
         </div>
       </div>
 
@@ -915,22 +916,32 @@ async function loadSettings() {
 }
 
 async function saveSettings() {
-  const newPass = document.getElementById('set_new_pass').value;
-  const confirmPass = document.getElementById('set_confirm_pass').value;
-  if(newPass && newPass !== confirmPass){showToast('Passwords match nahi kar rahe!','error');return}
-  const updates = [
+    const updates = [
     {key:'shop_name', value:document.getElementById('set_shop_name').value},
     {key:'shop_phone', value:document.getElementById('set_shop_phone').value},
     {key:'shop_address', value:document.getElementById('set_shop_address').value},
     {key:'whatsapp_number', value:document.getElementById('set_whatsapp_number').value},
   ];
-  if(newPass) updates.push({key:'admin_password', value:newPass});
   for(const u of updates) {
     await sb.from('settings').upsert({key:u.key, value:u.value}, {onConflict:'key'});
   }
   showToast('Settings save ho gayi!','success');
-  document.getElementById('set_new_pass').value='';
-  document.getElementById('set_confirm_pass').value='';
+}
+
+  async function changeAdminPassword() {
+  const newPass = document.getElementById('set_new_pass').value;
+  const confirmPass = document.getElementById('set_confirm_pass').value;
+
+  if (!newPass) { showToast('Naya password daalo!', 'error'); return; }
+  if (newPass.length < 6) { showToast('Password kam se kam 6 characters ka ho!', 'error'); return; }
+  if (newPass !== confirmPass) { showToast('Passwords match nahi kar rahe!', 'error'); return; }
+
+  const { error } = await sb.auth.updateUser({ password: newPass });
+  if (error) { showToast('Error: ' + error.message, 'error'); return; }
+
+  showToast('Password change ho gaya!', 'success');
+  document.getElementById('set_new_pass').value = '';
+  document.getElementById('set_confirm_pass').value = '';
 }
 
 // ── IMAGE UPLOAD ──
